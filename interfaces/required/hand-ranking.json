@@ -1,0 +1,28 @@
+{
+  "id": "hand-ranking",
+  "type": "ae/hand-ranking",
+  "version": "1.0.0",
+  "notes": "What holdem-rules calls on the poker-hand-ranking component (createHoldem deps.ranking).",
+  "operations": {
+    "evaluate": {
+      "arguments": [
+        "cards:Card[]"
+      ],
+      "returns": "{score,category,ranks,name} (best five of the two hole cards and the board; names shown hands)"
+    },
+    "compareEvaluations": {
+      "arguments": [
+        "a",
+        "b"
+      ],
+      "returns": "{result,decidedBy,kickersRead} (tells whether a kicker decided the main pot)"
+    },
+    "winners": {
+      "arguments": [
+        "contenders:{id,cards}[]",
+        "board:Card[]"
+      ],
+      "returns": "{ids,evaluations} (the tied best hands of one pot)"
+    }
+  }
+}

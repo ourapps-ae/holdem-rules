@@ -1,0 +1,15 @@
+{
+  "id": "card-deck",
+  "type": "ae/card-deck",
+  "version": "1.0.0",
+  "notes": "What holdem-rules calls on the card-deck component (createGameRules deps.deck).",
+  "operations": {
+    "createShuffledDeck": {
+      "arguments": [
+        "settings:{decks:integer,jokers:boolean}",
+        "source:{shuffle(items)}"
+      ],
+      "returns": "Deck {draw:Card[],burned:Card[]}; holdem-rules asks for {decks:1,jokers:false}, passes a shuffler built on the engine's rng, and deals from the end of draw"
+    }
+  }
+}

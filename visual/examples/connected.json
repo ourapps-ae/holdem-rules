@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "id": "holdem-rules-connected",
+  "title": "Hold'em rules: connected consumer",
+  "status": "example",
+  "view": "component",
+  "focus": "component",
+  "definitions": [
+    {
+      "id": "ourapps-ae.holdem-rules",
+      "name": "Hold'em rules",
+      "kind": "component",
+      "status": "example",
+      "package": "ourapps-ae/holdem-rules",
+      "version": "0.3.0",
+      "ports": [
+        {
+          "id": "card-deck",
+          "name": "Card deck",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/card-deck",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "chip-ledger",
+          "name": "Chip ledger",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/chip-ledger",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "level-schedule",
+          "name": "Level schedule",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/level-schedule",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "hand-ranking",
+          "name": "Hand ranking",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/hand-ranking",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "rules-settings",
+          "name": "Rules settings",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/rules-settings",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "game-rules",
+          "name": "Game rules",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/game-rules",
+          "version": "1.0.0"
+        }
+      ],
+      "settings": [
+        {
+          "id": "seats",
+          "name": "Seats",
+          "type": "number",
+          "required": false,
+          "secret": false,
+          "default": 9
+        },
+        {
+          "id": "minimumOpeningBetBigBlinds",
+          "name": "Minimumopeningbetbigblinds",
+          "type": "number",
+          "required": false,
+          "secret": false,
+          "default": 1
+        },
+        {
+          "id": "revealAtRunout",
+          "name": "Revealatrunout",
+          "type": "boolean",
+          "required": false,
+          "secret": false,
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "consumer",
+      "name": "Example application consumer",
+      "kind": "application",
+      "status": "example",
+      "revision": "0.1.0",
+      "ports": [
+        {
+          "id": "game-rules",
+          "name": "Game rules",
+          "direction": "input",
+          "kind": "interface",
+          "type": "ae/game-rules",
+          "version": "1.0.0",
+          "required": true,
+          "cardinality": "one"
+        },
+        {
+          "id": "card-deck",
+          "name": "Card deck",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/card-deck",
+          "version": "1.0.0"
+        },
+        {
+          "id": "chip-ledger",
+          "name": "Chip ledger",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/chip-ledger",
+          "version": "1.0.0"
+        },
+        {
+          "id": "level-schedule",
+          "name": "Level schedule",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/level-schedule",
+          "version": "1.0.0"
+        },
+        {
+          "id": "hand-ranking",
+          "name": "Hand ranking",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/hand-ranking",
+          "version": "1.0.0"
+        },
+        {
+          "id": "rules-settings",
+          "name": "Rules settings",
+          "direction": "output",
+          "kind": "interface",
+          "type": "ae/rules-settings",
+          "version": "1.0.0"
+        }
+      ],
+      "settings": []
+    }
+  ],
+  "instances": [
+    {
+      "id": "component",
+      "name": "Hold'em rules",
+      "definition": "ourapps-ae.holdem-rules",
+      "configuration": {}
+    },
+    {
+      "id": "consumer",
+      "name": "Example consumer",
+      "definition": "consumer",
+      "configuration": {}
+    }
+  ],
+  "connections": [
+    {
+      "source": {
+        "instance": "component",
+        "port": "game-rules"
+      },
+      "target": {
+        "instance": "consumer",
+        "port": "game-rules"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "card-deck"
+      },
+      "target": {
+        "instance": "component",
+        "port": "card-deck"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "chip-ledger"
+      },
+      "target": {
+        "instance": "component",
+        "port": "chip-ledger"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "level-schedule"
+      },
+      "target": {
+        "instance": "component",
+        "port": "level-schedule"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "hand-ranking"
+      },
+      "target": {
+        "instance": "component",
+        "port": "hand-ranking"
+      }
+    },
+    {
+      "source": {
+        "instance": "consumer",
+        "port": "rules-settings"
+      },
+      "target": {
+        "instance": "component",
+        "port": "rules-settings"
+      }
+    }
+  ]
+}

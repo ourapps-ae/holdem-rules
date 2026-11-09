@@ -1,0 +1,14 @@
+{
+  "id": "rules-settings",
+  "type": "ae/rules-settings",
+  "version": "1.0.0",
+  "notes": "What holdem-rules reads from the rules-settings component, bound to the loaded rules (createGameRules deps.rules, optional). Absent or invalid values leave the settings at their defaults.",
+  "operations": {
+    "value": {
+      "arguments": [
+        "path:string"
+      ],
+      "returns": "unknown (undefined when missing); holdem-rules reads players.maximum (seats) and betting.minimum_opening_bet_big_blinds"
+    }
+  }
+}

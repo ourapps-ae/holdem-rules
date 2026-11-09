@@ -1,0 +1,264 @@
+{
+  "id": "game-rules",
+  "type": "ae/game-rules",
+  "version": "1.0.0",
+  "notes": "The game-rules interface turn-engine drives (components/turn-engine/interfaces/required/game-rules.json), provided for Texas hold'em by createGameRules. A round is { hand, autoSteps }: JSON-safe, opaque to the engine. The chip ledger (ae/chip-ledger) is passed in and returned on every call that moves chips; the hand moves chips only through chip-ledger operations (commit, fold, endRound, returnUncalled, buildPots, awardPot, settle, voidHand, nextHand, displayPots), so chip-ledger's sidePots, oddChipRule and minimumUnit settings decide the pots. Every operation is pure: it returns new values and never changes its arguments. The hand operations of the lower layer (createHoldem) are listed under lowerLayer.",
+  "types": {
+    "Round": "{hand:Hand,autoSteps:number}; autoSteps counts runout steps taken, used to pace the first board card",
+    "Hand": "plain data (JSON-safe): players with cards, stacks and wagers (mirrored from the ledger), board, deck remainder, street, stage, actorId, event, lastActorId, bet to match, last full raise, result, and the ledger it was last given",
+    "Ledger": "ae/chip-ledger Ledger {settings,stakes:{id,seat,stack,bet,totalIn,folded}[],issued}",
+    "RoundPlayer": "{id:string,seat:number}",
+    "Positions": "{button:number,sbSeat:number,bbSeat:number}; the carry between rounds",
+    "Move": "{type:'fold'}|{type:'check'}|{type:'call'}|{type:'bet',to:number}|{type:'show',cards:(0|1)[]}; bet carries the total for the street (opening bet, raise or all-in raise); show turns own cards face up once the round is over",
+    "MoveCode": "badRequest|notAllowed|badAmount|notYourTurn|wrongPhase (the codes the engine's Moved accepts; unknownPlayer and notEnoughPlayers of the lower layer are reported as notAllowed)",
+    "Moved": "{ok:true,round:Round,ledger:Ledger}|{ok:false,code:MoveCode}",
+    "RoundPhase": "{stage:'acting'|'auto'|'over',actorId:string|null,settleMs:number,autoDelayMs:number|null,event:'deal'|'flop'|'turn'|'river'|'action'|null,lastActorId:string|null}",
+    "RoundOutcome": "{holdMs:number,voided:boolean,result:HandOutcome&{holdMs:number},historyEntry:{winners:{playerId:string,amount:number}[]}}",
+    "HandOutcome": "{no,board,pots:{amount,eligible,winners:{playerId,amount,handName}[]}[],uncontested,voided,showdown:{kind:'combination'|'kicker'|'draw',winners,kickers}|null}",
+    "HiddenRecord": "{ownerId:string,open:{},hidden:{cards:Card[]},revealed:{cards:number[]}}; one per player in the hand, cards revealed by index (0 and 1)",
+    "DecisionInput": "poker-strategy's DecisionInput without style: {hole,board,street,stack,bet,seat,button,seats,sb,bb,currentBet,lastFullRaiseTo,pot,legal:{fold,check,call,bet:{min,max,opening}|null},opponents:{id,seat,bet,totalIn,lastAction}[]}",
+    "PublicView": "{hand:HandView,players:{id,seat,stack,bet,totalIn,folded,allIn,lastAction,hand}[],result:HandOutcome|null}; no hole cards (they come from records) and no legal moves (they come from legal)",
+    "Legal": "{fold:boolean,check:boolean,call:number|null,bet:{min:number,max:number,opening:boolean}|null,show:number[]}; max is all-in; call may be less than the bet to match for a short stack",
+    "Prompt": "{key:string,args:(string|number)[],text:string}"
+  },
+  "operations": {
+    "optionNames": {
+      "arguments": [],
+      "returns": "string[] (readable property; always [] for hold'em: no option a client may switch)"
+    },
+    "newRound": {
+      "arguments": [
+        "input:{no:number,level:number,players:RoundPlayer[],carry:Positions|unknown|null}",
+        "ledger:Ledger",
+        "rng:()=>number"
+      ],
+      "returns": "{round:Round,ledger:Ledger,carry:Positions}",
+      "notes": "Draws a one-deck shuffled deck from card-deck (createShuffledDeck, shuffled with rng), reads sb and bb from level-schedule levelInfo(level).values, takes each player's stack from the ledger, moves the button from carry (null or anything that is not Positions draws the button with rng), deals two cards each, posts the blinds through the ledger (a short stack posts what it has) and finds the first actor. Throws when the round cannot be dealt (fewer than two players, a player with no chips or not in the ledger, a blind that is not a multiple of the ledger's minimumUnit, a ledger with fewer seats than this table)."
+    },
+    "phase": {
+      "arguments": [
+        "round:Round",
+        "pacing:{settleMs:number}"
+      ],
+      "returns": "RoundPhase",
+      "notes": "acting while a player may bet: settleMs is pacing.settleMs plus 340 ms per dealt card (2 per player) right after the deal, event is the last event (deal, a new street, or action with lastActorId). auto while nobody can bet and the board is being dealt: autoDelayMs is pacing.settleMs (plus the dealing time after a deal) before the first board card, then 3000 ms between cards. over once settled or voided."
+    },
+    "parseMove": {
+      "arguments": [
+        "input:unknown"
+      ],
+      "returns": "{ok:true,move:Move,needsTurn:boolean}|{ok:false}",
+      "notes": "needsTurn is false only for show."
+    },
+    "act": {
+      "arguments": [
+        "round:Round",
+        "ledger:Ledger",
+        "playerId:string",
+        "move:Move",
+        "context:{auto:boolean}"
+      ],
+      "returns": "Moved",
+      "notes": "Checks turn, stage and amount (bet totals follow the ledger's minimumUnit unless all-in), moves chips through the ledger and goes on by itself to the next actor, the next street, the runout or the settlement. Throws when the ledger passed in does not match the chips of the round's players (stack, wager and folded mark); chips of players outside the hand may differ (a rebuy)."
+    },
+    "defaultMove": {
+      "arguments": [
+        "round:Round",
+        "playerId:string"
+      ],
+      "returns": "Move",
+      "notes": "Check when free, otherwise fold; always accepted by act for the player to move."
+    },
+    "step": {
+      "arguments": [
+        "round:Round",
+        "ledger:Ledger"
+      ],
+      "returns": "{round:Round,ledger:Ledger}",
+      "notes": "Only while phase is auto: deals the next board cards (flop, turn or river); settles after the river. Throws otherwise."
+    },
+    "outcome": {
+      "arguments": [
+        "round:Round"
+      ],
+      "returns": "RoundOutcome|null",
+      "notes": "Null until the round is over. holdMs: 6000 when nobody showed down, 22000 for a win on the combination, 27000 when a kicker decided, 42000 for a draw, 0 when voided (the recipe's pauses; settable as pacing). historyEntry.winners lists every pot winner with the amount paid, the shape round-history appendRound takes."
+    },
+    "voidRound": {
+      "arguments": [
+        "round:Round",
+        "ledger:Ledger"
+      ],
+      "returns": "{round:Round,ledger:Ledger,outcome:RoundOutcome}",
+      "notes": "Ends the round without a winner and returns every wager through the ledger, blinds included. A round already over is returned unchanged."
+    },
+    "observation": {
+      "arguments": [
+        "round:Round",
+        "playerId:string"
+      ],
+      "returns": "DecisionInput|null",
+      "notes": "What that player may know, shaped for poker-strategy decide: own hole cards, board, street, stack, bet, seat, button, blinds, bet to match, last full raise, pot (all wagers), legal (fold false means not this player's turn), and the opponents still in the hand with their wagers and last action kind. Null for someone not in the hand. Other players' cards are never included."
+    },
+    "records": {
+      "arguments": [
+        "round:Round"
+      ],
+      "returns": "HiddenRecord[]",
+      "notes": "One per player: hidden.cards are the two hole cards, revealed.cards the indexes turned face up (all live hands at a showdown or runout, or by a show move)."
+    },
+    "publicView": {
+      "arguments": [
+        "round:Round",
+        "viewerId:string|null",
+        "options:Record<string,boolean>"
+      ],
+      "returns": "PublicView",
+      "notes": "options is accepted and ignored (optionNames is empty)."
+    },
+    "legal": {
+      "arguments": [
+        "round:Round",
+        "viewerId:string",
+        "context:{paused:boolean}"
+      ],
+      "returns": "Legal",
+      "notes": "All false or null (show empty) when paused, when it is not the viewer's turn, or the viewer is not in the hand; after the round is over only show lists the cards still face down."
+    },
+    "prompt": {
+      "arguments": [
+        "round:Round",
+        "viewerId:string|null"
+      ],
+      "returns": "Prompt|null",
+      "notes": "facingBet [amount to call] or checkOrBet for the actor; dealingBoard during the runout; after the round youWon [amount] for a winner, othersFolded or showdown for others, handVoided when cancelled. Null for a player who is not to act, so the engine uses its own wording."
+    }
+  },
+  "lowerLayer": {
+    "notes": "createGameRules(...).lower is createHoldem(deps:{ranking,ledger}, settings): the hand state machine the interface above adapts. Each operation takes and returns a Hand. newHand also takes an optional ledger (and potRules when it opens its own); stacks and chipsInPlay read the hand.",
+    "operations": {
+      "parseAction": {
+        "arguments": [
+          "input:unknown"
+        ],
+        "returns": "{ok:true,value:Action}|{ok:false,code:'badRequest'}"
+      },
+      "newHand": {
+        "arguments": [
+          "args:{no,level,sb,bb,players:{id,seat,stack}[],positions:Positions|null,deck:Card[],rng,ledger?:Ledger,potRules?:{sidePots?,oddChipRule?,minimumUnit?}}"
+        ],
+        "returns": "{ok:true,value:{hand:Hand,positions:Positions}}|{ok:false,code}"
+      },
+      "legalActions": {
+        "arguments": [
+          "hand:Hand",
+          "playerId:string"
+        ],
+        "returns": "Legal"
+      },
+      "apply": {
+        "arguments": [
+          "hand:Hand",
+          "playerId:string",
+          "action:Action",
+          "options?:{auto?:boolean}"
+        ],
+        "returns": "Step {ok:true,hand}|{ok:false,code}"
+      },
+      "autoAction": {
+        "arguments": [
+          "hand:Hand",
+          "playerId:string"
+        ],
+        "returns": "Action"
+      },
+      "runoutStep": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "Step"
+      },
+      "isHandOver": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "boolean"
+      },
+      "settle": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "Step (finish a runout at once; unchanged when already over)"
+      },
+      "voidHand": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "Step"
+      },
+      "view": {
+        "arguments": [
+          "hand:Hand",
+          "viewerId:string|null"
+        ],
+        "returns": "RulesView {hand,players,legal,result} (other players' cards null unless shown)"
+      },
+      "attachLedger": {
+        "arguments": [
+          "hand:Hand",
+          "ledger:Ledger"
+        ],
+        "returns": "Hand (throws unless the ledger holds the same chips for every player of the hand)"
+      },
+      "stacks": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "Record<playerId,number>"
+      },
+      "chipsInPlay": {
+        "arguments": [
+          "hand:Hand"
+        ],
+        "returns": "number (stacks plus wagers; equals hand.chips at every step)"
+      }
+    }
+  },
+  "settings": {
+    "seats": "integer, at least 2, default 9 (the rules file's players.maximum when present): seats round the table, used for clockwise order; the ledger's own seats setting must be at least this",
+    "minimumOpeningBetBigBlinds": "integer, at least 1, default 1 (the rules file's betting.minimum_opening_bet_big_blinds when present): the smallest opening bet after the flop and the first raise step, in big blinds",
+    "revealAtRunout": "boolean, default true: turn live hands face up as soon as nobody can bet any more"
+  },
+  "pacing": {
+    "dealCardMs": "340: the clients deal one card at a time at this pace",
+    "runoutStepMs": "3000: between board cards when nobody can bet",
+    "handOverMs": "6000: result shown after a hand nobody showed down",
+    "showdownMs": "22000: after a showdown won on the combination",
+    "showdownKickerMs": "27000: after a showdown a kicker decided",
+    "showdownDrawMs": "42000: after a drawn showdown"
+  },
+  "construction": {
+    "createGameRules": {
+      "arguments": [
+        "deps:{ranking:HandRanking,ledger:ChipLedgerOperations,deck:{createShuffledDeck},schedule:{levelInfo},rules?:{value(path)}}",
+        "settings?:HoldemSettings",
+        "pacing?:Partial<Pacing>"
+      ],
+      "returns": "the operations above plus settings, pacing and lower"
+    },
+    "createHoldem": {
+      "arguments": [
+        "deps:{ranking:HandRanking,ledger:ChipLedgerOperations}",
+        "settings?:HoldemSettings"
+      ],
+      "returns": "GameRules (the lower layer)"
+    }
+  },
+  "engineContract": [
+    "Start of a round: newRound(input, ledger, rng) with the players still in; keep the returned carry for the next round and write the returned ledger back.",
+    "While phase.stage is acting: wait for a move (the engine's clock), parseMove it, act it (or act defaultMove with auto true); write the returned ledger back every time.",
+    "While phase.stage is auto: call step after autoDelayMs.",
+    "When phase.stage is over: outcome gives holdMs for the result pause, result for the clients and historyEntry for round-history.",
+    "To cancel mid-round: voidRound returns every wager through the ledger."
+  ]
+}

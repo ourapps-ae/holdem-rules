@@ -1,0 +1,204 @@
+{
+  "step": [
+    [
+      null,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      25,
+      25
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "presets": [
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "pot": 300,
+      "toCall": 50,
+      "currentBet": 50,
+      "smallBlind": 25,
+      "down": {
+        "min": 100,
+        "halfPot": 225,
+        "pot": 400,
+        "allIn": 1000
+      },
+      "nearest": {
+        "min": 100,
+        "halfPot": 225,
+        "pot": 400,
+        "allIn": 1000
+      }
+    },
+    {
+      "range": {
+        "min": 50,
+        "max": 5000,
+        "opening": true
+      },
+      "pot": 175,
+      "toCall": null,
+      "currentBet": 0,
+      "smallBlind": 25,
+      "down": {
+        "min": 50,
+        "halfPot": 75,
+        "pot": 175,
+        "allIn": 5000
+      },
+      "nearest": {
+        "min": 50,
+        "halfPot": 100,
+        "pot": 175,
+        "allIn": 5000
+      }
+    },
+    {
+      "range": {
+        "min": 200,
+        "max": 300,
+        "opening": false
+      },
+      "pot": 5000,
+      "toCall": 100,
+      "currentBet": 100,
+      "smallBlind": 25,
+      "down": {
+        "min": 200,
+        "halfPot": 300,
+        "pot": 300,
+        "allIn": 300
+      },
+      "nearest": {
+        "min": 200,
+        "halfPot": 300,
+        "pot": 300,
+        "allIn": 300
+      }
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "pot": 40,
+      "toCall": 50,
+      "currentBet": 50,
+      "smallBlind": 25,
+      "down": {
+        "min": 100,
+        "halfPot": 100,
+        "pot": 125,
+        "allIn": 1000
+      },
+      "nearest": {
+        "min": 100,
+        "halfPot": 100,
+        "pot": 150,
+        "allIn": 1000
+      }
+    }
+  ],
+  "adjust": [
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "amount": 500,
+      "by": 100,
+      "result": 600
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "amount": 950,
+      "by": 100,
+      "result": 1000
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "amount": 120,
+      "by": -100,
+      "result": 100
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "amount": 2147483000,
+      "by": 2147483000,
+      "result": 1000
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "amount": -2147483000,
+      "by": -2147483000,
+      "result": 100
+    }
+  ],
+  "kind": [
+    {
+      "range": {
+        "min": 50,
+        "max": 1000,
+        "opening": true
+      },
+      "to": 50,
+      "result": "bet"
+    },
+    {
+      "range": {
+        "min": 50,
+        "max": 1000,
+        "opening": true
+      },
+      "to": 1000,
+      "result": "allIn"
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 1000,
+        "opening": false
+      },
+      "to": 300,
+      "result": "raise"
+    },
+    {
+      "range": {
+        "min": 100,
+        "max": 100,
+        "opening": false
+      },
+      "to": 100,
+      "result": "allIn"
+    }
+  ]
+}

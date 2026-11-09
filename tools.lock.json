@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "dependencies": [],
+  "tools": {
+    "node": "26.5.0",
+    "python3": "3.12.8",
+    "swiftc": "6.4.2",
+    "kotlinc": "2.2.0",
+    "java": "26.0.1"
+  }
+}

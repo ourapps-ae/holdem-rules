@@ -1,0 +1,94 @@
+{
+  "id": "ourapps-ae.holdem-rules",
+  "name": "Hold'em rules",
+  "kind": "component",
+  "status": "example",
+  "package": "ourapps-ae/holdem-rules",
+  "version": "0.3.0",
+  "ports": [
+    {
+      "id": "card-deck",
+      "name": "Card deck",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/card-deck",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "chip-ledger",
+      "name": "Chip ledger",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/chip-ledger",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "level-schedule",
+      "name": "Level schedule",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/level-schedule",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "hand-ranking",
+      "name": "Hand ranking",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/hand-ranking",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "rules-settings",
+      "name": "Rules settings",
+      "direction": "input",
+      "kind": "interface",
+      "type": "ae/rules-settings",
+      "version": "1.0.0",
+      "required": true,
+      "cardinality": "one"
+    },
+    {
+      "id": "game-rules",
+      "name": "Game rules",
+      "direction": "output",
+      "kind": "interface",
+      "type": "ae/game-rules",
+      "version": "1.0.0"
+    }
+  ],
+  "settings": [
+    {
+      "id": "seats",
+      "name": "Seats",
+      "type": "number",
+      "required": false,
+      "secret": false,
+      "default": 9
+    },
+    {
+      "id": "minimumOpeningBetBigBlinds",
+      "name": "Minimumopeningbetbigblinds",
+      "type": "number",
+      "required": false,
+      "secret": false,
+      "default": 1
+    },
+    {
+      "id": "revealAtRunout",
+      "name": "Revealatrunout",
+      "type": "boolean",
+      "required": false,
+      "secret": false,
+      "default": true
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "name": "holdem-rules",
+  "version": "0.3.0",
+  "title": "Hold'em rules",
+  "description": "Texas hold'em for a table engine: the game-rules interface turn-engine drives (round, phase, act, step, outcome, observation, records, views, prompt) as an adapter over a hand state machine that moves every chip through the chip ledger; plus the betting controls' amount model.",
+  "facilities": [
+    {
+      "id": "game-rules",
+      "description": "Play hold'em rounds for a turn engine: deal, phase, act, step, outcome, observation, records, views, legal moves, prompt"
+    }
+  ],
+  "provides": [
+    {
+      "id": "game-rules",
+      "type": "ae/game-rules",
+      "version": "1.0.0",
+      "path": "interfaces/game-rules.json"
+    }
+  ],
+  "requires": [
+    {
+      "id": "card-deck",
+      "type": "ae/card-deck",
+      "version": "1.0.0",
+      "path": "interfaces/required/card-deck.json"
+    },
+    {
+      "id": "chip-ledger",
+      "type": "ae/chip-ledger",
+      "version": "1.0.0",
+      "path": "interfaces/required/chip-ledger.json"
+    },
+    {
+      "id": "level-schedule",
+      "type": "ae/level-schedule",
+      "version": "1.0.0",
+      "path": "interfaces/required/level-schedule.json"
+    },
+    {
+      "id": "hand-ranking",
+      "type": "ae/hand-ranking",
+      "version": "1.0.0",
+      "path": "interfaces/required/hand-ranking.json"
+    },
+    {
+      "id": "rules-settings",
+      "type": "ae/rules-settings",
+      "version": "1.0.0",
+      "path": "interfaces/required/rules-settings.json"
+    }
+  ],
+  "collect": [
+    {
+      "id": "seats",
+      "type": "integer",
+      "grammar": "integer",
+      "required": false,
+      "secret": false,
+      "default": 9
+    },
+    {
+      "id": "minimumOpeningBetBigBlinds",
+      "type": "integer",
+      "grammar": "integer",
+      "required": false,
+      "secret": false,
+      "default": 1
+    },
+    {
+      "id": "revealAtRunout",
+      "type": "boolean",
+      "grammar": "boolean",
+      "required": false,
+      "secret": false,
+      "default": true
+    }
+  ],
+  "dependencies": [],
+  "suites": [
+    {
+      "id": "web",
+      "argv": [
+        "node",
+        "--test",
+        "tests/server.test.ts",
+        "tests/rules.test.ts",
+        "tests/web.test.ts"
+      ],
+      "tools": {
+        "node": "26.5.0"
+      }
+    },
+    {
+      "id": "apple",
+      "argv": [
+        "python3",
+        "tests/native.py",
+        "apple"
+      ],
+      "scope": "platform",
+      "tools": {
+        "python3": "3.12.8",
+        "swiftc": "6.4.2"
+      },
+      "fixtures": [
+        "tests/apple/main.swift",
+        "tests/fixtures/betting.json"
+      ]
+    },
+    {
+      "id": "android",
+      "argv": [
+        "python3",
+        "tests/native.py",
+        "android"
+      ],
+      "scope": "platform",
+      "tools": {
+        "python3": "3.12.8",
+        "kotlinc": "2.2.0",
+        "java": "26.0.1"
+      },
+      "fixtures": [
+        "tests/android/Main.kt",
+        "tests/fixtures/betting.json"
+      ]
+    }
+  ],
+  "tools": {
+    "node": "26.5.0",
+    "python3": "3.12.8",
+    "swiftc": "6.4.2",
+    "kotlinc": "2.2.0",
+    "java": "26.0.1"
+  },
+  "platforms": [
+    "server",
+    "web",
+    "apple",
+    "android"
+  ],
+  "text": {
+    "purpose": "Texas hold'em as the game-rules interface a turn engine drives, over a hand state machine. `createGameRules({ranking, ledger, deck, schedule, rules?})` provides `optionNames`, `newRound`, `phase`, `parseMove`, `act`, `defaultMove`, `step`, `outcome`, `voidRound`, `observation`, `records`, `publicView`, `legal` and `prompt`, exactly as turn-engine declares them. A round is `{hand, autoSteps}`; the engine's chip ledger goes in and comes back on every call, and every chip moves through chip-ledger operations (`commit`, `fold`, `endRound`, `returnUncalled`, `buildPots`, `awardPot`, `settle`, `voidHand`), so the ledger's `sidePots`, `oddChipRule` and `minimumUnit` settings decide the pots and amounts. `newRound` draws a shuffled deck from card-deck, reads the blinds from level-schedule, moves the button from the carry it returned last time (dead button, heads-up swap), deals, posts blinds (a short stack posts what it has) and finds the first actor. `phase` says who acts (with the settle plus the time to deal cards), or that the table deals the board by itself (3 s between cards), or that the round is over. `act` checks turn, stage and amount, handles short all-in raises (a short raise reopens the betting only when short raises add up to a full one) and goes on to the next actor, street, runout or settlement. `outcome` gives how long to hold the result (6 s when nobody showed down, 22 s a showdown, 27 s when a kicker decided, 42 s for a draw) and a history entry with the winners. `observation` is poker-strategy's DecisionInput; `records` are the hole cards for private-views; `legal` is all false when paused. The hand state machine (`createHoldem`: `newHand`, `legalActions`, `apply`, `autoAction`, `runoutStep`, `settle`, `voidHand`, `view`, `stacks`, `chipsInPlay`, `parseAction`, `attachLedger`) is the lower layer. Client side, `implementation/web|apple|android` hold the betting controls' amount model (step, quick amounts, nudging, all-in detection) with no screen code.",
+    "userInputs": "The installer collects three optional settings (the recipe maps its rules file to them through rules-settings; players.maximum and betting.minimum_opening_bet_big_blinds are also read from the rules file when `deps.rules` is given):",
+    "integration": "turn-engine calls this component for everything that happens inside a round and owns the room, clocks, players, pauses, computer players and the tournament around it. Binding: `ranking` is poker-hand-ranking's operations; `ledger` is chip-ledger's operations as they are (the ledger value travels through the engine, not through this component); `deck` is card-deck's `createShuffledDeck`; `schedule` is level-schedule's `levelInfo` bound to the table's Schedule (levels with values `{sb, bb}`); `rules` (optional) is rules-settings `value(path)` bound to the loaded rules. At the start of a round the engine calls `newRound` with the players still in, the tournament's ledger and its random source, and keeps the returned `carry`. It then reads `phase`: while acting it waits its decision clock and calls `act` with a `parseMove`d move (or `defaultMove` with `auto: true`); while auto it calls `step` after `autoDelayMs`; when over it reads `outcome` (hold time, result for clients, history entry for round-history). Every call that moves chips takes and returns the ledger; the ledger must be the one last returned (chips of players outside the round may change in between, for a rebuy). Clients get `publicView`, `legal` and the hole cards from `records` through private-views; computer players get `observation`, which is poker-strategy's DecisionInput. Web, Apple and Android controls call the amount model with the `bet` range from `legal`.",
+    "infrastructure": "No deployed service, account or key. Pure functions; no clocks and no storage. A hand serialises to about a few kilobytes of JSON.",
+    "verification": "`node --test tests/server.test.ts tests/rules.test.ts tests/web.test.ts` plays scripted hands (heads-up to showdown, three-handed fold-out, dead button and heads-up positions, minimum raise sizes and refused amounts, short all-in that does not reopen betting, short raises that add up to a full raise, side pots won by different players, uncalled chips returned, split pots with the odd chip clockwise from the button, folded chips above the last live layer, runout, voluntary show, view masking, void) and 60 random games of 2 to 9 players on the lower layer; `tests/rules.test.ts` plays eight scripted rounds through the interface only (with a fake deck, a fake schedule, and both the real chip ledger and an independent fake ledger) and asserts the same public facts after every step, the same result and positions as the lower layer, the hold time and the history entry; covers each of the 14 operations (pacing, codes, observation shape, records, prompt, paused legal, void, settings from the rules file, ledger mismatch, minimum unit, `sidePots` off and `first-listed` odd chip through the ledger, ledger call order) and 40 random games through the interface with the ledger balanced after every step. Chip-ledger, card-deck and poker-hand-ranking are copies of the current provider files under `tests/support/`. `python3 tests/native.py apple` compiles and runs the Swift amount model against the same fixture the web tests read. `python3 tests/native.py android` does the same with kotlinc and java (written, not run: kotlinc is not installed on the build machine). `authoring/differential-vs-recipe.ts` (not packaged) drove the recipe's engine.ts and the lower layer (with the real chip ledger) with the same decks and the same random legal actions over 540 hands and 4409 actions (112 refused identically) and compared stacks, bets, street, actor, bet to match, pots, winners, shown cards and positions after every action: no difference except the one hand where the recipe loses chips (see SOURCE.md).",
+    "scenarios": "A nine-person tournament table; a heads-up final; a short stack all-in against two deeper stacks with a side pot; a split pot on a board play; a hand voided when the tournament is cancelled; a coach who stops at the runout to explain the pots.",
+    "updates": "A round in progress can be stored as the Round value. Removing the component removes the files under components/holdem-rules/; nothing is stored."
+  },
+  "agentInstructions": "Select this component for any Texas hold'em recipe. Connect hand-ranking to poker-hand-ranking, card-deck to card-deck, chip-ledger to chip-ledger, level-schedule to level-schedule (levels with values {sb, bb}) and rules-settings to rules-settings; connect the provided game-rules interface to turn-engine's game-rules input. Map the recipe's answers to `seats`, `minimumOpeningBetBigBlinds` and `revealAtRunout`; the chip ledger's `sidePots`, `oddChipRule` and `minimumUnit` settings are set on chip-ledger and decide the pots. Include the web, Apple and Android amount model files in the clients that show a bet slider.",
+  "developerInstructions": "No accounts or keys. Defaults match the recipe's house rules (nine seats, minimum opening bet one big blind, hands turned up when nobody can bet). Build the object with `createGameRules({ranking, ledger, deck, schedule, rules}, settings, pacing)` from `implementation/server/index.ts`: `ledger` is the chip-ledger operations object, `deck` has `createShuffledDeck`, `schedule` has `levelInfo(level)` bound to your Schedule, `rules` (optional) has `value(path)`. Blind levels, starting stacks, timing, rebuys and the player count belong to level-schedule, chip-ledger, game-clock and the engine. Hold times and card pacing are the `pacing` argument. To add a game other than hold'em, implement the 14 operations of `interfaces/game-rules.json`.",
+  "suitability": {
+    "format": 1,
+    "jobs": [
+      "holdem-rules"
+    ],
+    "profiles": [
+      {
+        "id": "any",
+        "load": {},
+        "cost": "none",
+        "regions": [
+          "any"
+        ],
+        "compliance": []
+      }
+    ],
+    "notes": "Pure library. No hosted service, account or provider limit applies. A full random game of nine players plays in well under a millisecond per action on the build machine."
+  }
+}
