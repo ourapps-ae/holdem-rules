@@ -1,6 +1,6 @@
 {
   "name": "holdem-rules",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "title": "Hold'em rules",
   "description": "Texas hold'em for a table engine: the game-rules interface turn-engine drives (round, phase, act, step, outcome, observation, records, views, prompt) as an adapter over a hand state machine that moves every chip through the chip ledger; plus the betting controls' amount model.",
   "facilities": [
@@ -22,31 +22,31 @@
       "id": "card-deck",
       "type": "ae/card-deck",
       "version": "1.0.0",
-      "path": "interfaces/required/card-deck.json"
+      "path": "interfaces/required-card-deck.json"
     },
     {
       "id": "chip-ledger",
       "type": "ae/chip-ledger",
       "version": "1.0.0",
-      "path": "interfaces/required/chip-ledger.json"
+      "path": "interfaces/required-chip-ledger.json"
     },
     {
       "id": "level-schedule",
       "type": "ae/level-schedule",
       "version": "1.0.0",
-      "path": "interfaces/required/level-schedule.json"
+      "path": "interfaces/required-level-schedule.json"
     },
     {
       "id": "hand-ranking",
       "type": "ae/hand-ranking",
       "version": "1.0.0",
-      "path": "interfaces/required/hand-ranking.json"
+      "path": "interfaces/required-hand-ranking.json"
     },
     {
       "id": "rules-settings",
       "type": "ae/rules-settings",
       "version": "1.0.0",
-      "path": "interfaces/required/rules-settings.json"
+      "path": "interfaces/required-rules-settings.json"
     }
   ],
   "collect": [
@@ -149,7 +149,7 @@
     "updates": "A round in progress can be stored as the Round value. Removing the component removes the files under components/holdem-rules/; nothing is stored."
   },
   "agentInstructions": "Select this component for any Texas hold'em recipe. Connect hand-ranking to poker-hand-ranking, card-deck to card-deck, chip-ledger to chip-ledger, level-schedule to level-schedule (levels with values {sb, bb}) and rules-settings to rules-settings; connect the provided game-rules interface to turn-engine's game-rules input. Map the recipe's answers to `seats`, `minimumOpeningBetBigBlinds` and `revealAtRunout`; the chip ledger's `sidePots`, `oddChipRule` and `minimumUnit` settings are set on chip-ledger and decide the pots. Include the web, Apple and Android amount model files in the clients that show a bet slider.",
-  "developerInstructions": "No accounts or keys. Defaults match the recipe's house rules (nine seats, minimum opening bet one big blind, hands turned up when nobody can bet). Build the object with `createGameRules({ranking, ledger, deck, schedule, rules}, settings, pacing)` from `implementation/server/index.ts`: `ledger` is the chip-ledger operations object, `deck` has `createShuffledDeck`, `schedule` has `levelInfo(level)` bound to your Schedule, `rules` (optional) has `value(path)`. Blind levels, starting stacks, timing, rebuys and the player count belong to level-schedule, chip-ledger, game-clock and the engine. Hold times and card pacing are the `pacing` argument. To add a game other than hold'em, implement the 14 operations of `interfaces/game-rules.json`.",
+  "developerInstructions": "No accounts or keys. Defaults match the recipe's house rules (nine seats, minimum opening bet one big blind, hands turned up when nobody can bet). Build the object with `createGameRules({ranking, ledger, deck, schedule, rules}, settings, pacing)` from `implementation/server/index.ts`: `ledger` is the chip-ledger operations object, `deck` has `createShuffledDeck`, `schedule` has `levelInfo(level)` bound to your Schedule, `rules` (optional) has `value(path)`. Blind levels, starting stacks, timing, rebuys and the player count belong to level-schedule, chip-ledger, game-clock and the engine. Hold times and card pacing are the `pacing` argument. To add a game other than hold'em, implement the 14 `GameRules.<name>` methods of `interfaces/game-rules.json` (an OpenRPC 1.3.2 document with JSON Schema 2020-12 types).",
   "suitability": {
     "format": 1,
     "jobs": [

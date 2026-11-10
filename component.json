@@ -1,323 +1,54 @@
 {
-  "format": 1,
-  "kind": "component",
-  "identity": {
-    "name": "ourapps-ae/holdem-rules",
-    "version": "0.3.0",
-    "sourceRevision": "19905b75dbea89fbfd424d67fe26c81aaed0e018",
-    "sourceTreeDigest": "0000000000000000000000000000000000000000000000000000000000000000",
-    "licenceStatus": "deferred"
-  },
-  "facilities": [
-    {
-      "id": "game-rules",
-      "description": "Play hold'em rounds for a turn engine: deal, phase, act, step, outcome, observation, records, views, legal moves, prompt"
-    }
-  ],
-  "documents": {
-    "contract": "CONTRACT.md",
-    "interfaces": [
-      "interfaces/game-rules.json",
-      "interfaces/required/card-deck.json",
-      "interfaces/required/chip-ledger.json",
-      "interfaces/required/hand-ranking.json",
-      "interfaces/required/level-schedule.json",
-      "interfaces/required/rules-settings.json",
-      "suitability.json"
-    ],
-    "examples": [
-      "examples/consumer.ts"
-    ],
-    "licenceNotice": "LICENCE"
-  },
-  "collect": [
-    {
-      "id": "seats",
-      "type": "integer",
-      "grammar": "integer",
-      "required": false,
-      "secret": false,
-      "default": 9
-    },
-    {
-      "id": "minimumOpeningBetBigBlinds",
-      "type": "integer",
-      "grammar": "integer",
-      "required": false,
-      "secret": false,
-      "default": 1
-    },
-    {
-      "id": "revealAtRunout",
-      "type": "boolean",
-      "grammar": "boolean",
-      "required": false,
-      "secret": false,
-      "default": true
-    }
-  ],
-  "files": [
-    {
-      "path": "CONTRACT.md",
-      "executable": false
-    },
-    {
-      "path": "INSTRUCTIONS.md",
-      "executable": false
-    },
-    {
-      "path": "LICENCE",
-      "executable": false
-    },
-    {
-      "path": "SOURCE.md",
-      "executable": false
-    },
-    {
-      "path": "examples/consumer.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/android/src/main/java/ae/holdem/Betting.kt",
-      "executable": false
-    },
-    {
-      "path": "implementation/apple/Sources/Betting.swift",
-      "executable": false
-    },
-    {
-      "path": "implementation/server/holdem.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/server/index.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/server/pots.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/server/rules.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/server/types.ts",
-      "executable": false
-    },
-    {
-      "path": "implementation/web/betting.ts",
-      "executable": false
-    },
-    {
-      "path": "interfaces/game-rules.json",
-      "executable": false
-    },
-    {
-      "path": "interfaces/required/card-deck.json",
-      "executable": false
-    },
-    {
-      "path": "interfaces/required/chip-ledger.json",
-      "executable": false
-    },
-    {
-      "path": "interfaces/required/hand-ranking.json",
-      "executable": false
-    },
-    {
-      "path": "interfaces/required/level-schedule.json",
-      "executable": false
-    },
-    {
-      "path": "interfaces/required/rules-settings.json",
-      "executable": false
-    },
-    {
-      "path": "suitability.json",
-      "executable": false
-    },
-    {
-      "path": "tests/android/Main.kt",
-      "executable": false
-    },
-    {
-      "path": "tests/apple/main.swift",
-      "executable": false
-    },
-    {
-      "path": "tests/fixtures/betting.json",
-      "executable": false
-    },
-    {
-      "path": "tests/native.py",
-      "executable": false
-    },
-    {
-      "path": "tests/rules.test.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/server.test.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/card-deck/deck.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/chip-ledger/ledger.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/hand-ranking/codes.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/hand-ranking/ranking.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/oracle.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/support/rig.ts",
-      "executable": false
-    },
-    {
-      "path": "tests/web.test.ts",
-      "executable": false
-    },
-    {
-      "path": "tools.lock.json",
-      "executable": false
-    },
-    {
-      "path": "visual/definition.json",
-      "executable": false
-    },
-    {
-      "path": "visual/examples/connected.json",
-      "executable": false
-    },
-    {
-      "path": "visual/output/connected.png",
-      "executable": false
-    },
-    {
-      "path": "visual/output/connected.svg",
-      "executable": false
-    },
-    {
-      "path": "visual/output/description.md",
-      "executable": false
-    }
-  ],
   "artefacts": [
     {
-      "source": "implementation/android/src/main/java/ae/holdem/Betting.kt",
       "destination": "components/holdem-rules/android/src/main/java/ae/holdem/Betting.kt",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/android/src/main/java/ae/holdem/Betting.kt",
+      "template": false
     },
     {
-      "source": "implementation/apple/Sources/Betting.swift",
       "destination": "components/holdem-rules/apple/Sources/Betting.swift",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/apple/Sources/Betting.swift",
+      "template": false
     },
     {
-      "source": "implementation/server/holdem.ts",
       "destination": "components/holdem-rules/server/holdem.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/server/holdem.ts",
+      "template": false
     },
     {
-      "source": "implementation/server/index.ts",
       "destination": "components/holdem-rules/server/index.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/server/index.ts",
+      "template": false
     },
     {
-      "source": "implementation/server/pots.ts",
       "destination": "components/holdem-rules/server/pots.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/server/pots.ts",
+      "template": false
     },
     {
-      "source": "implementation/server/rules.ts",
       "destination": "components/holdem-rules/server/rules.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/server/rules.ts",
+      "template": false
     },
     {
-      "source": "implementation/server/types.ts",
       "destination": "components/holdem-rules/server/types.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/server/types.ts",
+      "template": false
     },
     {
-      "source": "implementation/web/betting.ts",
       "destination": "components/holdem-rules/web/betting.ts",
-      "template": false,
-      "executable": false
+      "executable": false,
+      "source": "implementation/web/betting.ts",
+      "template": false
     }
   ],
-  "dependencies": [],
-  "provides": [
-    {
-      "id": "game-rules",
-      "type": "ae/game-rules",
-      "version": "1.0.0",
-      "path": "interfaces/game-rules.json"
-    }
-  ],
-  "requires": [
-    {
-      "id": "card-deck",
-      "type": "ae/card-deck",
-      "version": "1.0.0",
-      "path": "interfaces/required/card-deck.json"
-    },
-    {
-      "id": "chip-ledger",
-      "type": "ae/chip-ledger",
-      "version": "1.0.0",
-      "path": "interfaces/required/chip-ledger.json"
-    },
-    {
-      "id": "level-schedule",
-      "type": "ae/level-schedule",
-      "version": "1.0.0",
-      "path": "interfaces/required/level-schedule.json"
-    },
-    {
-      "id": "hand-ranking",
-      "type": "ae/hand-ranking",
-      "version": "1.0.0",
-      "path": "interfaces/required/hand-ranking.json"
-    },
-    {
-      "id": "rules-settings",
-      "type": "ae/rules-settings",
-      "version": "1.0.0",
-      "path": "interfaces/required/rules-settings.json"
-    }
-  ],
-  "visual": {
-    "definition": "visual/definition.json",
-    "examples": [
-      "visual/examples/connected.json"
-    ],
-    "outputs": [
-      "visual/output/connected.svg",
-      "visual/output/connected.png"
-    ],
-    "descriptions": [
-      "visual/output/description.md"
-    ]
-  },
   "capabilities": {
     "hosts": [],
     "secrets": [],
@@ -332,15 +63,277 @@
       "components/holdem-rules/web/betting.ts"
     ]
   },
+  "collect": [
+    {
+      "default": 9,
+      "grammar": "integer",
+      "id": "seats",
+      "required": false,
+      "secret": false,
+      "type": "integer"
+    },
+    {
+      "default": 1,
+      "grammar": "integer",
+      "id": "minimumOpeningBetBigBlinds",
+      "required": false,
+      "secret": false,
+      "type": "integer"
+    },
+    {
+      "default": true,
+      "grammar": "boolean",
+      "id": "revealAtRunout",
+      "required": false,
+      "secret": false,
+      "type": "boolean"
+    }
+  ],
+  "dependencies": [],
+  "documents": {
+    "contract": "CONTRACT.md",
+    "examples": [
+      "examples/consumer.ts"
+    ],
+    "interfaces": [
+      "interfaces/game-rules.json",
+      "interfaces/required-card-deck.json",
+      "interfaces/required-chip-ledger.json",
+      "interfaces/required-hand-ranking.json",
+      "interfaces/required-level-schedule.json",
+      "interfaces/required-rules-settings.json",
+      "suitability.json"
+    ],
+    "licenceNotice": "LICENCE"
+  },
+  "facilities": [
+    {
+      "description": "Play hold'em rounds for a turn engine: deal, phase, act, step, outcome, observation, records, views, legal moves, prompt",
+      "id": "game-rules"
+    }
+  ],
+  "files": [
+    {
+      "executable": false,
+      "path": "CONTRACT.md"
+    },
+    {
+      "executable": false,
+      "path": "INSTRUCTIONS.md"
+    },
+    {
+      "executable": false,
+      "path": "LICENCE"
+    },
+    {
+      "executable": false,
+      "path": "NOTICE"
+    },
+    {
+      "executable": false,
+      "path": "SOURCE.md"
+    },
+    {
+      "executable": false,
+      "path": "examples/consumer.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/android/src/main/java/ae/holdem/Betting.kt"
+    },
+    {
+      "executable": false,
+      "path": "implementation/apple/Sources/Betting.swift"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/holdem.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/index.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/pots.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/rules.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/server/types.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/web/betting.ts"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/game-rules.json"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/required-card-deck.json"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/required-chip-ledger.json"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/required-hand-ranking.json"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/required-level-schedule.json"
+    },
+    {
+      "executable": false,
+      "path": "interfaces/required-rules-settings.json"
+    },
+    {
+      "executable": false,
+      "path": "suitability.json"
+    },
+    {
+      "executable": false,
+      "path": "tests/android/Main.kt"
+    },
+    {
+      "executable": false,
+      "path": "tests/apple/main.swift"
+    },
+    {
+      "executable": false,
+      "path": "tests/fixtures/betting.json"
+    },
+    {
+      "executable": false,
+      "path": "tests/native.py"
+    },
+    {
+      "executable": false,
+      "path": "tests/rules.test.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/server.test.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/card-deck/deck.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/chip-ledger/ledger.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/hand-ranking/codes.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/hand-ranking/ranking.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/oracle.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/support/rig.ts"
+    },
+    {
+      "executable": false,
+      "path": "tests/web.test.ts"
+    },
+    {
+      "executable": false,
+      "path": "tools.lock.json"
+    },
+    {
+      "executable": false,
+      "path": "visual/definition.json"
+    },
+    {
+      "executable": false,
+      "path": "visual/examples/connected.json"
+    },
+    {
+      "executable": false,
+      "path": "visual/output/connected.png"
+    },
+    {
+      "executable": false,
+      "path": "visual/output/connected.svg"
+    },
+    {
+      "executable": false,
+      "path": "visual/output/description.md"
+    }
+  ],
+  "format": 1,
+  "identity": {
+    "licence": "Apache-2.0",
+    "name": "ourapps-ae/holdem-rules",
+    "sourceRevision": "19905b75dbea89fbfd424d67fe26c81aaed0e018",
+    "sourceTreeDigest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "version": "0.4.0"
+  },
   "infrastructure": {
     "accounts": [],
     "costStatus": "unmeasured",
     "deployedReason": "No deployed service; injected resources and local library functions only."
   },
+  "kind": "component",
+  "provides": [
+    {
+      "id": "game-rules",
+      "path": "interfaces/game-rules.json",
+      "type": "ae/game-rules",
+      "version": "1.0.0"
+    }
+  ],
+  "requires": [
+    {
+      "id": "card-deck",
+      "path": "interfaces/required-card-deck.json",
+      "type": "ae/card-deck",
+      "version": "1.0.0"
+    },
+    {
+      "id": "chip-ledger",
+      "path": "interfaces/required-chip-ledger.json",
+      "type": "ae/chip-ledger",
+      "version": "1.0.0"
+    },
+    {
+      "id": "level-schedule",
+      "path": "interfaces/required-level-schedule.json",
+      "type": "ae/level-schedule",
+      "version": "1.0.0"
+    },
+    {
+      "id": "hand-ranking",
+      "path": "interfaces/required-hand-ranking.json",
+      "type": "ae/hand-ranking",
+      "version": "1.0.0"
+    },
+    {
+      "id": "rules-settings",
+      "path": "interfaces/required-rules-settings.json",
+      "type": "ae/rules-settings",
+      "version": "1.0.0"
+    }
+  ],
+  "upgrade": {
+    "migration": "files-only",
+    "policy": "patch"
+  },
   "verification": [
     {
-      "id": "web",
-      "root": "package",
       "argv": [
         "node",
         "--test",
@@ -349,80 +342,91 @@
         "tests/web.test.ts"
       ],
       "cwd": ".",
-      "prepare": [],
-      "tools": {
-        "node": "26.5.0"
-      },
+      "expectedExit": 0,
       "fixtures": [
         "tests/fixtures/betting.json"
       ],
+      "id": "web",
       "locks": [
         "tools.lock.json"
       ],
       "network": false,
-      "timeoutSeconds": 120,
-      "expectedExit": 0,
+      "prepare": [],
+      "requirements": [],
+      "root": "package",
       "scope": "required-local",
-      "requirements": []
+      "timeoutSeconds": 120,
+      "tools": {
+        "node": "26.5.0"
+      }
     },
     {
-      "id": "apple",
-      "root": "package",
       "argv": [
         "python3",
         "tests/native.py",
         "apple"
       ],
       "cwd": ".",
-      "prepare": [],
-      "tools": {
-        "python3": "3.12.8",
-        "swiftc": "6.4.2"
-      },
+      "expectedExit": 0,
       "fixtures": [
         "tests/apple/main.swift",
         "tests/fixtures/betting.json"
       ],
+      "id": "apple",
       "locks": [
         "tools.lock.json"
       ],
       "network": false,
-      "timeoutSeconds": 120,
-      "expectedExit": 0,
+      "prepare": [],
+      "requirements": [],
+      "root": "package",
       "scope": "platform",
-      "requirements": []
+      "timeoutSeconds": 120,
+      "tools": {
+        "python3": "3.12.8",
+        "swiftc": "6.4.2"
+      }
     },
     {
-      "id": "android",
-      "root": "package",
       "argv": [
         "python3",
         "tests/native.py",
         "android"
       ],
       "cwd": ".",
-      "prepare": [],
-      "tools": {
-        "python3": "3.12.8",
-        "kotlinc": "2.2.0",
-        "java": "26.0.1"
-      },
+      "expectedExit": 0,
       "fixtures": [
         "tests/android/Main.kt",
         "tests/fixtures/betting.json"
       ],
+      "id": "android",
       "locks": [
         "tools.lock.json"
       ],
       "network": false,
-      "timeoutSeconds": 120,
-      "expectedExit": 0,
+      "prepare": [],
+      "requirements": [],
+      "root": "package",
       "scope": "platform",
-      "requirements": []
+      "timeoutSeconds": 120,
+      "tools": {
+        "java": "26.0.1",
+        "kotlinc": "2.2.0",
+        "python3": "3.12.8"
+      }
     }
   ],
-  "upgrade": {
-    "policy": "patch",
-    "migration": "files-only"
+  "visual": {
+    "definition": "visual/definition.json",
+    "descriptions": [
+      "visual/output/description.md"
+    ],
+    "examples": [
+      "visual/examples/connected.json"
+    ],
+    "outputs": [
+      "visual/output/connected.svg",
+      "visual/output/connected.png"
+    ]
   }
 }

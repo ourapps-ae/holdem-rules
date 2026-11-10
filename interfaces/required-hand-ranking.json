@@ -1,0 +1,574 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "ae/hand-ranking",
+    "version": "1.0.0",
+    "description": "The best five-card poker hand out of five to seven cards. A higher score wins; equal scores tie. TypeScript, `implementation/server/index.ts` (ranking.ts, codes.ts). Build a ranking with createHandRanking(codes) over card-deck's cardCodes, or use the ready-made handRanking; methods named `HandRanking.<name>` are members of that object."
+  },
+  "methods": [
+    {
+      "name": "createHandRanking",
+      "description": "A hand ranking that reads cards through the given card codes.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "codes",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/CardCodes"
+          },
+          "description": "Defaults to standardCodes, the fifty-two standard card codes."
+        }
+      ],
+      "result": {
+        "name": "ranking",
+        "schema": {
+          "$ref": "#/components/schemas/HandRanking"
+        }
+      }
+    },
+    {
+      "name": "handRanking",
+      "description": "A HandRanking with the standard card codes.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "handRanking",
+        "schema": {
+          "$ref": "#/components/schemas/HandRanking"
+        }
+      },
+      "x-ourapps-property": true
+    },
+    {
+      "name": "standardCodes",
+      "description": "The standard fifty-two card codes, used when no other card-deck is connected.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "standardCodes",
+        "schema": {
+          "$ref": "#/components/schemas/CardCodes"
+        }
+      },
+      "x-ourapps-property": true
+    },
+    {
+      "name": "CATEGORY",
+      "description": "The categories, weakest first (the index is the category number).",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "CATEGORY",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "minItems": 9,
+          "maxItems": 9
+        }
+      },
+      "x-ourapps-property": true
+    },
+    {
+      "name": "HandRanking.codes",
+      "description": "The card codes this ranking reads.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "codes",
+        "schema": {
+          "$ref": "#/components/schemas/CardCodes"
+        }
+      },
+      "x-ourapps-property": true
+    },
+    {
+      "name": "HandRanking.evaluate",
+      "description": "The best hand in five to seven cards.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "cards",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          },
+          "description": "Five to seven card codes."
+        }
+      ],
+      "result": {
+        "name": "evaluation",
+        "schema": {
+          "$ref": "#/components/schemas/Evaluation"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadHandSize"
+        },
+        {
+          "$ref": "#/components/errors/NotACard"
+        }
+      ]
+    },
+    {
+      "name": "HandRanking.compare",
+      "description": "Positive when a beats b, negative when b beats a, zero for a tie.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "a",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          }
+        },
+        {
+          "name": "b",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "order",
+        "schema": {
+          "type": "number"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadHandSize"
+        },
+        {
+          "$ref": "#/components/errors/NotACard"
+        }
+      ]
+    },
+    {
+      "name": "HandRanking.compareEvaluations",
+      "description": "Where two hands first differ: category, the combination itself, or a kicker.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "a",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        },
+        {
+          "name": "b",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        }
+      ],
+      "result": {
+        "name": "comparison",
+        "schema": {
+          "$ref": "#/components/schemas/Comparison"
+        }
+      }
+    },
+    {
+      "name": "HandRanking.winners",
+      "description": "Ids holding the best hand among the contenders with the shared board, in contender order; several on a tie.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "contenders",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "cards": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Card"
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "cards"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "name": "board",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "result",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "evaluations": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/components/schemas/Evaluation"
+              },
+              "description": "Contender id to evaluation."
+            }
+          },
+          "required": [
+            "ids",
+            "evaluations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadHandSize"
+        },
+        {
+          "$ref": "#/components/errors/NotACard"
+        }
+      ]
+    },
+    {
+      "name": "HandRanking.combinationSize",
+      "description": "How many leading ranks make the category's combination; the rest of an evaluation's ranks are kickers.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "category",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Category"
+          }
+        }
+      ],
+      "result": {
+        "name": "size",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      }
+    },
+    {
+      "name": "HandRanking.kickers",
+      "description": "The kicker ranks of an evaluation.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "evaluation",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        }
+      ],
+      "result": {
+        "name": "ranks",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12
+          }
+        }
+      }
+    },
+    {
+      "name": "HandRanking.bestFive",
+      "description": "The five cards an evaluation used: suited cards for a flush or straight flush, one card of each rank for a straight, otherwise the ranked cards then kickers.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "cards",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          },
+          "description": "The cards that were evaluated."
+        },
+        {
+          "name": "evaluation",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        }
+      ],
+      "result": {
+        "name": "five",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "maxItems": 5
+        }
+      }
+    },
+    {
+      "name": "HandRanking.patternCards",
+      "description": "The cards that are the pattern itself (the pair, the trips, the flush ...) within the five, without the kickers.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "five",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          }
+        },
+        {
+          "name": "evaluation",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Evaluation"
+          }
+        }
+      ],
+      "result": {
+        "name": "cards",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Card"
+          }
+        }
+      }
+    },
+    {
+      "name": "HandRanking.describe",
+      "description": "An English name, for example \"Full house, kings full of fours\" or \"Royal flush\".",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "category",
+          "required": true,
+          "schema": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 8
+              },
+              {
+                "$ref": "#/components/schemas/Category"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ranks",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          }
+        }
+      ],
+      "result": {
+        "name": "name",
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Card": {
+        "type": "string",
+        "pattern": "^[2-9TJQKA][cdhs]$",
+        "description": "Two characters: rank 2-9, T, J, Q, K, A then suit c, d, h, s."
+      },
+      "Category": {
+        "type": "string",
+        "enum": [
+          "highCard",
+          "pair",
+          "twoPair",
+          "threeOfAKind",
+          "straight",
+          "flush",
+          "fullHouse",
+          "fourOfAKind",
+          "straightFlush"
+        ]
+      },
+      "Evaluation": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The category above five rank nibbles, most significant first; higher wins, equal ties."
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "ranks": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "The ranks that decide the hand, most important first: the combination's ranks, then the kickers. 0 is a two, 12 an ace; a five-high straight is [3]."
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "score",
+          "category",
+          "ranks",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "Comparison": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "integer",
+            "enum": [
+              -1,
+              0,
+              1
+            ]
+          },
+          "decidedBy": {
+            "type": "string",
+            "enum": [
+              "category",
+              "combination",
+              "kicker",
+              "tie"
+            ]
+          },
+          "kickersRead": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Kickers read, counting the one that decided it (kicker only; 0 otherwise)."
+          }
+        },
+        "required": [
+          "result",
+          "decidedBy",
+          "kickersRead"
+        ],
+        "additionalProperties": false
+      },
+      "CardCodes": {
+        "type": "object",
+        "description": "Card-code tables and lookups: card-deck's `cardCodes` value.",
+        "x-ourapps-interface": "ae/card-deck",
+        "properties": {
+          "ranks": {
+            "type": "string"
+          },
+          "suits": {
+            "type": "string"
+          },
+          "rankNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rankPlurals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rankOf": {
+            "description": "A function rankOf(card: Card): number. Rank index, 0 for a two; below 0 for a code that is not a card."
+          },
+          "suitOf": {
+            "description": "A function suitOf(card: Card): number. The suit's place in `suits`; below 0 for a code that is not a card."
+          },
+          "fullDeck": {
+            "description": "A function fullDeck(): Card[]."
+          }
+        },
+        "required": [
+          "ranks",
+          "suits",
+          "rankNames",
+          "rankPlurals",
+          "rankOf",
+          "suitOf",
+          "fullDeck"
+        ]
+      },
+      "HandRanking": {
+        "type": "object",
+        "description": "The object createHandRanking returns; its members are the `HandRanking.<name>` methods."
+      }
+    },
+    "errors": {
+      "BadHandSize": {
+        "code": 1001,
+        "message": "a hand is five to seven cards",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "NotACard": {
+        "code": 1002,
+        "message": "not a card code: <code>",
+        "data": {
+          "thrown": "RangeError"
+        }
+      }
+    }
+  }
+}

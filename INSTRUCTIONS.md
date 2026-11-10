@@ -3,7 +3,7 @@
 ## For the agent
 Select this component for any Texas hold'em recipe. Connect hand-ranking to poker-hand-ranking, card-deck to card-deck, chip-ledger to chip-ledger, level-schedule to level-schedule (levels with values {sb, bb}) and rules-settings to rules-settings; connect the provided game-rules interface to turn-engine's game-rules input. Map the recipe's answers to `seats`, `minimumOpeningBetBigBlinds` and `revealAtRunout`; the chip ledger's `sidePots`, `oddChipRule` and `minimumUnit` settings are set on chip-ledger and decide the pots. Include the web, Apple and Android amount model files in the clients that show a bet slider.
 
-- Select package `ourapps-ae/holdem-rules` version `0.3.0`.
+- Select package `ourapps-ae/holdem-rules` version `0.4.0`.
 - Settings to configure:
   - `seats` (integer; optional; default `9`)
   - `minimumOpeningBetBigBlinds` (integer; optional; default `1`)
@@ -17,7 +17,7 @@ Select this component for any Texas hold'em recipe. Connect hand-ranking to poke
 - No accounts or keys are needed.
 
 ## For the developer
-No accounts or keys. Defaults match the recipe's house rules (nine seats, minimum opening bet one big blind, hands turned up when nobody can bet). Build the object with `createGameRules({ranking, ledger, deck, schedule, rules}, settings, pacing)` from `implementation/server/index.ts`: `ledger` is the chip-ledger operations object, `deck` has `createShuffledDeck`, `schedule` has `levelInfo(level)` bound to your Schedule, `rules` (optional) has `value(path)`. Blind levels, starting stacks, timing, rebuys and the player count belong to level-schedule, chip-ledger, game-clock and the engine. Hold times and card pacing are the `pacing` argument. To add a game other than hold'em, implement the 14 operations of `interfaces/game-rules.json`.
+No accounts or keys. Defaults match the recipe's house rules (nine seats, minimum opening bet one big blind, hands turned up when nobody can bet). Build the object with `createGameRules({ranking, ledger, deck, schedule, rules}, settings, pacing)` from `implementation/server/index.ts`: `ledger` is the chip-ledger operations object, `deck` has `createShuffledDeck`, `schedule` has `levelInfo(level)` bound to your Schedule, `rules` (optional) has `value(path)`. Blind levels, starting stacks, timing, rebuys and the player count belong to level-schedule, chip-ledger, game-clock and the engine. Hold times and card pacing are the `pacing` argument. To add a game other than hold'em, implement the 14 `GameRules.<name>` methods of `interfaces/game-rules.json` (an OpenRPC 1.3.2 document with JSON Schema 2020-12 types).
 
 ## How to check
 From the component directory:

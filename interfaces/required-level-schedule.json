@@ -1,0 +1,831 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "ae/level-schedule",
+    "version": "1.0.0",
+    "description": "Stakes that rise on a timer. A level is {label, values}: the values are whatever the game steps up (blinds, an ante, a target score); the component never looks inside them except to scale them. TypeScript, `implementation/server/levels.ts`. Methods named `ScheduleApi.<name>` are members of the object createScheduleApi returns: the tournament's view, with the clock reading as the only argument."
+  },
+  "methods": [
+    {
+      "name": "validateSettings",
+      "description": "Fill defaults (levelSeconds 600, afterLastLevel double, multiplier 2) and check the settings.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "settings",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/PartialScheduleSettings"
+          },
+          "description": "Defaults to {}."
+        }
+      ],
+      "result": {
+        "name": "settings",
+        "schema": {
+          "$ref": "#/components/schemas/ScheduleSettings"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadLevelSeconds"
+        },
+        {
+          "$ref": "#/components/errors/BadAfterLast"
+        },
+        {
+          "$ref": "#/components/errors/BadMultiplier"
+        }
+      ]
+    },
+    {
+      "name": "createSchedule",
+      "description": "A schedule from levels and settings. Levels must be non-empty and labelled, with the same value names on every level and values that are finite numbers of 0 or more.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "levels",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Level"
+            },
+            "minItems": 1
+          }
+        },
+        {
+          "name": "settings",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/PartialScheduleSettings"
+          },
+          "description": "Defaults to {}."
+        }
+      ],
+      "result": {
+        "name": "schedule",
+        "schema": {
+          "$ref": "#/components/schemas/Schedule"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/NoLevels"
+        },
+        {
+          "$ref": "#/components/errors/NoValues"
+        },
+        {
+          "$ref": "#/components/errors/NoLabel"
+        },
+        {
+          "$ref": "#/components/errors/DifferentValues"
+        },
+        {
+          "$ref": "#/components/errors/BadValue"
+        },
+        {
+          "$ref": "#/components/errors/BadLevelSeconds"
+        },
+        {
+          "$ref": "#/components/errors/BadAfterLast"
+        },
+        {
+          "$ref": "#/components/errors/BadMultiplier"
+        }
+      ]
+    },
+    {
+      "name": "levelDurationMs",
+      "description": "Milliseconds per level.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        }
+      ],
+      "result": {
+        "name": "ms",
+        "schema": {
+          "type": "integer",
+          "minimum": 1000
+        }
+      }
+    },
+    {
+      "name": "levelFor",
+      "description": "The level number (from 1) for an unpaused clock reading; under stop it never passes the last level.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "level",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "name": "levelInfo",
+      "description": "A level by number. Past the end of the list: double makes up a level labelled `<last>+<n>` with scaled values (capped at 2^53-1); repeat and stop repeat the last level.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "level",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "info",
+        "schema": {
+          "$ref": "#/components/schemas/LevelInfo"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadLevel"
+        }
+      ]
+    },
+    {
+      "name": "currentLevel",
+      "description": "The level in force at a clock reading.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "info",
+        "schema": {
+          "$ref": "#/components/schemas/LevelInfo"
+        }
+      }
+    },
+    {
+      "name": "nextLevel",
+      "description": "The level that follows the one in force, or null when the schedule has run out (stop at the last level).",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "info",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/LevelInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "msUntilNext",
+      "description": "Milliseconds of unpaused clock until the next level, or null when there is none.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "ms",
+        "schema": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    {
+      "name": "table",
+      "description": "The first `count` levels as rows, for a rules or schedule page.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        },
+        {
+          "name": "count",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Defaults to the number of listed levels."
+        }
+      ],
+      "result": {
+        "name": "rows",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/LevelInfo"
+          }
+        }
+      }
+    },
+    {
+      "name": "createScheduleApi",
+      "description": "The tournament's view of a schedule.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "schedule",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Schedule"
+          }
+        }
+      ],
+      "result": {
+        "name": "api",
+        "schema": {
+          "$ref": "#/components/schemas/ScheduleApi"
+        }
+      }
+    },
+    {
+      "name": "ScheduleApi.schedule",
+      "description": "The schedule it was built from.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "schedule",
+        "schema": {
+          "$ref": "#/components/schemas/Schedule"
+        }
+      },
+      "x-ourapps-property": true
+    },
+    {
+      "name": "ScheduleApi.levelAt",
+      "description": "The level number (from 1) at a reading of the level clock (levelFor).",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "level",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "name": "ScheduleApi.describe",
+      "description": "The level in force with the next level and the time until it, for a client.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "elapsedMs",
+          "required": true,
+          "schema": {
+            "type": "number",
+            "description": "Unpaused level-clock milliseconds (game-clock elapsed(clock, 'level')); below 0 counts as 0."
+          }
+        }
+      ],
+      "result": {
+        "name": "description",
+        "schema": {
+          "$ref": "#/components/schemas/LevelDescription"
+        }
+      }
+    },
+    {
+      "name": "ScheduleApi.levelInfo",
+      "description": "The values of a level by number (the blinds of level 3), for a game that deals at a given level.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "level",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "result": {
+        "name": "info",
+        "schema": {
+          "$ref": "#/components/schemas/LevelInfo"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadLevel"
+        }
+      ]
+    },
+    {
+      "name": "levelsFromRules",
+      "description": "A rules file section's `levels` as schedule levels: label \"Level <n>\" from each row's `level` (or its position), values from the listed fields. Reads plain data: any parsed rules file will do.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "rules",
+          "required": true,
+          "schema": {},
+          "description": "A parsed rules file."
+        },
+        {
+          "name": "options",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string",
+                "default": "blinds",
+                "description": "Dotted path of the section."
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Rule field to value name; default { small_blind: \"sb\", big_blind: \"bb\" }. Fields not listed are ignored."
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Defaults to {}."
+        }
+      ],
+      "result": {
+        "name": "levels",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Level"
+          }
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/NoRulesLevels"
+        },
+        {
+          "$ref": "#/components/errors/NoRulesField"
+        }
+      ]
+    },
+    {
+      "name": "scheduleFromRules",
+      "description": "A whole schedule from the rules section: the levels, `level_duration_seconds`, and the doubling after the last level from `after_last_level.<field>_multiplier_each_level` (every field must agree; an after_last_level without multipliers means repeat). Explicit settings override the rules.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "rules",
+          "required": true,
+          "schema": {},
+          "description": "A parsed rules file."
+        },
+        {
+          "name": "settings",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/PartialScheduleSettings"
+          },
+          "description": "Defaults to {}."
+        },
+        {
+          "name": "options",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string",
+                "default": "blinds",
+                "description": "Dotted path of the section."
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Rule field to value name; default { small_blind: \"sb\", big_blind: \"bb\" }. Fields not listed are ignored."
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Defaults to {}."
+        }
+      ],
+      "result": {
+        "name": "schedule",
+        "schema": {
+          "$ref": "#/components/schemas/Schedule"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/NoRulesLevels"
+        },
+        {
+          "$ref": "#/components/errors/NoRulesField"
+        },
+        {
+          "$ref": "#/components/errors/MultipliersDiffer"
+        },
+        {
+          "$ref": "#/components/errors/NoLevels"
+        },
+        {
+          "$ref": "#/components/errors/NoValues"
+        },
+        {
+          "$ref": "#/components/errors/NoLabel"
+        },
+        {
+          "$ref": "#/components/errors/DifferentValues"
+        },
+        {
+          "$ref": "#/components/errors/BadValue"
+        },
+        {
+          "$ref": "#/components/errors/BadLevelSeconds"
+        },
+        {
+          "$ref": "#/components/errors/BadAfterLast"
+        },
+        {
+          "$ref": "#/components/errors/BadMultiplier"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "schemas": {
+      "LevelValues": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number",
+          "minimum": 0
+        },
+        "description": "Value name to amount, for example { sb: 25, bb: 50 }."
+      },
+      "Level": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "values": {
+            "$ref": "#/components/schemas/LevelValues"
+          }
+        },
+        "required": [
+          "label",
+          "values"
+        ],
+        "additionalProperties": false
+      },
+      "ScheduleSettings": {
+        "type": "object",
+        "properties": {
+          "levelSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "default": 600
+          },
+          "afterLastLevel": {
+            "type": "string",
+            "enum": [
+              "double",
+              "repeat",
+              "stop"
+            ],
+            "default": "double",
+            "description": "After the last listed level. double: every value is multiplied by `multiplier` for each further level; repeat: the last level's values go on (the level number still counts up); stop: the level number stops at the last level and `final` is true."
+          },
+          "multiplier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "default": 2
+          }
+        },
+        "required": [
+          "levelSeconds",
+          "afterLastLevel",
+          "multiplier"
+        ],
+        "additionalProperties": false
+      },
+      "PartialScheduleSettings": {
+        "type": "object",
+        "properties": {
+          "levelSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "default": 600
+          },
+          "afterLastLevel": {
+            "type": "string",
+            "enum": [
+              "double",
+              "repeat",
+              "stop"
+            ],
+            "default": "double",
+            "description": "After the last listed level. double: every value is multiplied by `multiplier` for each further level; repeat: the last level's values go on (the level number still counts up); stop: the level number stops at the last level and `final` is true."
+          },
+          "multiplier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "default": 2
+          }
+        },
+        "additionalProperties": false,
+        "description": "Any subset of ScheduleSettings."
+      },
+      "Schedule": {
+        "type": "object",
+        "properties": {
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Level"
+            },
+            "minItems": 1
+          },
+          "settings": {
+            "$ref": "#/components/schemas/ScheduleSettings"
+          }
+        },
+        "required": [
+          "levels",
+          "settings"
+        ],
+        "additionalProperties": false
+      },
+      "LevelInfo": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "values": {
+            "$ref": "#/components/schemas/LevelValues"
+          },
+          "extended": {
+            "type": "boolean",
+            "description": "True for levels past the end of the list that double made up."
+          },
+          "final": {
+            "type": "boolean",
+            "description": "True only under stop, at the last level: nothing will change."
+          }
+        },
+        "required": [
+          "level",
+          "label",
+          "values",
+          "extended",
+          "final"
+        ],
+        "additionalProperties": false
+      },
+      "LevelDescription": {
+        "type": "object",
+        "description": "LevelInfo plus the next level and the time until it.",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "values": {
+            "$ref": "#/components/schemas/LevelValues"
+          },
+          "extended": {
+            "type": "boolean"
+          },
+          "final": {
+            "type": "boolean"
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LevelInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "msUntilNext": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        },
+        "required": [
+          "level",
+          "label",
+          "values",
+          "extended",
+          "final",
+          "next",
+          "msUntilNext"
+        ],
+        "additionalProperties": false
+      },
+      "ScheduleApi": {
+        "type": "object",
+        "description": "The object createScheduleApi returns; its members are the `ScheduleApi.<name>` methods."
+      }
+    },
+    "errors": {
+      "BadLevelSeconds": {
+        "code": 1001,
+        "message": "levelSeconds must be a whole number of at least 1",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "BadAfterLast": {
+        "code": 1002,
+        "message": "afterLastLevel must be one of double, repeat, stop",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "BadMultiplier": {
+        "code": 1003,
+        "message": "multiplier must be a whole number of at least 1",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "NoLevels": {
+        "code": 1004,
+        "message": "a schedule needs at least one level",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "NoValues": {
+        "code": 1005,
+        "message": "level 1 has no values",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "NoLabel": {
+        "code": 1006,
+        "message": "level <n> needs a label",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "DifferentValues": {
+        "code": 1007,
+        "message": "level <n> has different values from level 1",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "BadValue": {
+        "code": 1008,
+        "message": "level <n> value <name> must be a number of 0 or more",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "BadLevel": {
+        "code": 1009,
+        "message": "level is a whole number from 1",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "NoRulesLevels": {
+        "code": 1010,
+        "message": "no levels at <at>.levels",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "NoRulesField": {
+        "code": 1011,
+        "message": "level <n> has no number <field>",
+        "data": {
+          "thrown": "Error"
+        }
+      },
+      "MultipliersDiffer": {
+        "code": 1012,
+        "message": "after_last_level multipliers differ between values; one schedule has one multiplier",
+        "data": {
+          "thrown": "Error"
+        }
+      }
+    }
+  }
+}

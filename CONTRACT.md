@@ -25,10 +25,10 @@ The installer collects three optional settings (the recipe maps its rules file t
 - `implementation/web/betting.ts` -> `components/holdem-rules/web/betting.ts`
 
 Dependencies: none.
-`tools.lock.json` pins verification tools: node 26.5.0, python3 3.12.8, swiftc 6.4.2, kotlinc 2.2.0, java 26.0.1. Licence wording remains deferred.
+`tools.lock.json` pins verification tools: node 26.5.0, python3 3.12.8, swiftc 6.4.2, kotlinc 2.2.0, java 26.0.1. Licence: `Apache-2.0` (`LICENCE`, `NOTICE`).
 
 ## Provided interfaces
-- `interfaces/game-rules.json` defines `game-rules` (ae/game-rules) version 1.0.0.
+- `interfaces/game-rules.json` defines `game-rules` (ae/game-rules) version 1.0.0: an OpenRPC 1.3.2 document, one method per function (a member of a created object is `<Type>.<member>`), with parameter, result and data types as JSON Schema 2020-12 (`components.schemas`) and thrown errors under `errors`.
 
 ## Required interfaces
 - `card-deck` (ae/card-deck) version 1.0.0, supplied by the recipe or application.
@@ -36,6 +36,8 @@ Dependencies: none.
 - `level-schedule` (ae/level-schedule) version 1.0.0, supplied by the recipe or application.
 - `hand-ranking` (ae/hand-ranking) version 1.0.0, supplied by the recipe or application.
 - `rules-settings` (ae/rules-settings) version 1.0.0, supplied by the recipe or application.
+
+Each `interfaces/required-<id>.json` is a byte copy of the providing component's document.
 
 ## Integration
 turn-engine calls this component for everything that happens inside a round and owns the room, clocks, players, pauses, computer players and the tournament around it. Binding: `ranking` is poker-hand-ranking's operations; `ledger` is chip-ledger's operations as they are (the ledger value travels through the engine, not through this component); `deck` is card-deck's `createShuffledDeck`; `schedule` is level-schedule's `levelInfo` bound to the table's Schedule (levels with values `{sb, bb}`); `rules` (optional) is rules-settings `value(path)` bound to the loaded rules. At the start of a round the engine calls `newRound` with the players still in, the tournament's ledger and its random source, and keeps the returned `carry`. It then reads `phase`: while acting it waits its decision clock and calls `act` with a `parseMove`d move (or `defaultMove` with `auto: true`); while auto it calls `step` after `autoDelayMs`; when over it reads `outcome` (hold time, result for clients, history entry for round-history). Every call that moves chips takes and returns the ledger; the ledger must be the one last returned (chips of players outside the round may change in between, for a rebuy). Clients get `publicView`, `legal` and the hole cards from `records` through private-views; computer players get `observation`, which is poker-strategy's DecisionInput. Web, Apple and Android controls call the amount model with the `bet` range from `legal`.

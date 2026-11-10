@@ -1,0 +1,774 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "title": "ae/card-deck",
+    "version": "1.0.0",
+    "description": "Playing cards: create, shuffle, deal and burn, plus card codes, colours and names. Server and rules code: TypeScript `implementation/server/deck.ts`. Client card facts: TypeScript `implementation/web/cards.ts` (cardFacts, rankLabel), Swift `CardCode` (`implementation/apple/Sources/CardCodes.swift`) and Kotlin `ae.deck.CardCode` (`implementation/android/.../CardCode.kt`). Every deck operation returns a new deck and leaves its arguments unchanged."
+  },
+  "methods": [
+    {
+      "name": "createDeck",
+      "description": "An unshuffled deck: `decks` packs in suit order (clubs, diamonds, hearts, spades; two to ace), plus two jokers per pack when `jokers` is on.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "settings",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/DeckSettings",
+            "description": "Defaults to { decks: 1, jokers: false }."
+          }
+        }
+      ],
+      "result": {
+        "name": "deck",
+        "schema": {
+          "$ref": "#/components/schemas/Deck"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadDecks"
+        },
+        {
+          "$ref": "#/components/errors/BadJokers"
+        }
+      ]
+    },
+    {
+      "name": "createShuffledDeck",
+      "description": "createDeck then shuffleDeck.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "settings",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/DeckSettings"
+          }
+        },
+        {
+          "name": "source",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Shuffler"
+          }
+        }
+      ],
+      "result": {
+        "name": "deck",
+        "schema": {
+          "$ref": "#/components/schemas/Deck"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadDecks"
+        },
+        {
+          "$ref": "#/components/errors/BadJokers"
+        }
+      ]
+    },
+    {
+      "name": "shuffleDeck",
+      "description": "Shuffle the draw pile through the source; burned cards stay burned.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "deck",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Deck"
+          }
+        },
+        {
+          "name": "source",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Shuffler"
+          }
+        }
+      ],
+      "result": {
+        "name": "deck",
+        "schema": {
+          "$ref": "#/components/schemas/Deck"
+        }
+      }
+    },
+    {
+      "name": "deal",
+      "description": "Take `count` cards from the end of the draw pile; the first card taken is dealt first.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "deck",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Deck"
+          }
+        },
+        {
+          "name": "count",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1
+          },
+          "description": "How many cards to deal."
+        }
+      ],
+      "result": {
+        "name": "dealt",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "cards": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Card"
+              }
+            },
+            "deck": {
+              "$ref": "#/components/schemas/Deck"
+            }
+          },
+          "required": [
+            "cards",
+            "deck"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadCount"
+        },
+        {
+          "$ref": "#/components/errors/ShortPile"
+        }
+      ]
+    },
+    {
+      "name": "burn",
+      "description": "Move `count` cards from the draw pile to the burned pile.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "deck",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Deck"
+          }
+        },
+        {
+          "name": "count",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1
+          },
+          "description": "How many cards to burn."
+        }
+      ],
+      "result": {
+        "name": "deck",
+        "schema": {
+          "$ref": "#/components/schemas/Deck"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadCount"
+        },
+        {
+          "$ref": "#/components/errors/ShortPile"
+        }
+      ]
+    },
+    {
+      "name": "remaining",
+      "description": "Cards left in the draw pile.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "deck",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Deck"
+          }
+        }
+      ],
+      "result": {
+        "name": "count",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    {
+      "name": "validateSettings",
+      "description": "Check deck settings and return a clean copy.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "settings",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/DeckSettings"
+          }
+        }
+      ],
+      "result": {
+        "name": "settings",
+        "schema": {
+          "$ref": "#/components/schemas/DeckSettings"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadDecks"
+        },
+        {
+          "$ref": "#/components/errors/BadJokers"
+        }
+      ]
+    },
+    {
+      "name": "fullPack",
+      "description": "One 52-card pack in suit order, without jokers.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "cards",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "minItems": 52,
+          "maxItems": 52
+        }
+      }
+    },
+    {
+      "name": "parseCard",
+      "description": "Rank and suit indexes of a card code; null for anything that is not a card code.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "code",
+          "required": true,
+          "schema": {}
+        }
+      ],
+      "result": {
+        "name": "parsed",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ParsedCard"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "isCard",
+      "description": "True when the value is a card code (a joker included).",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "x",
+          "required": true,
+          "schema": {}
+        }
+      ],
+      "result": {
+        "name": "valid",
+        "schema": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "name": "isJoker",
+      "description": "True when the value is \"*r\" or \"*b\".",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "card",
+          "required": true,
+          "schema": {}
+        }
+      ],
+      "result": {
+        "name": "joker",
+        "schema": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "name": "makeCard",
+      "description": "The code of a rank and suit index.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "rank",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12
+          }
+        },
+        {
+          "name": "suit",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          }
+        }
+      ],
+      "result": {
+        "name": "card",
+        "schema": {
+          "$ref": "#/components/schemas/Card"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/BadRankSuit"
+        }
+      ]
+    },
+    {
+      "name": "rankOf",
+      "description": "Rank index (0 two to 12 ace); -1 for a joker or an invalid code.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "card",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Card"
+          }
+        }
+      ],
+      "result": {
+        "name": "rank",
+        "schema": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 12
+        }
+      }
+    },
+    {
+      "name": "suitOf",
+      "description": "Suit index in the order c, d, h, s; -1 for a joker or an invalid code.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "card",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Card"
+          }
+        }
+      ],
+      "result": {
+        "name": "suit",
+        "schema": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 3
+        }
+      }
+    },
+    {
+      "name": "isRed",
+      "description": "True for hearts, diamonds and the red joker.",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "card",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Card"
+          }
+        }
+      ],
+      "result": {
+        "name": "red",
+        "schema": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "name": "cardName",
+      "description": "A readable name such as \"ace of spades\" or \"red joker\".",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "card",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Card"
+          }
+        }
+      ],
+      "result": {
+        "name": "name",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/NotACard"
+        }
+      ]
+    },
+    {
+      "name": "cardFacts",
+      "description": "Card facts for a client that draws cards (web). Null for anything that is not a card code. Swift `CardCode(code)` (nil when invalid) and Kotlin `CardCode.parse(code)` (null when invalid) give the same facts as the properties rank, suit, isJoker, isRed, rankIndex, suitIndex, suitGlyph and courtName, and the method rankLabel(letters).",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "code",
+          "required": true,
+          "schema": {}
+        }
+      ],
+      "result": {
+        "name": "facts",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/CardFacts"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rankLabel",
+      "description": "The rank as printed: T shows as 10 unless `letters` supplies its own text (J is V in French).",
+      "paramStructure": "by-position",
+      "params": [
+        {
+          "name": "rank",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          }
+        },
+        {
+          "name": "letters",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Rank character to printed text; defaults to empty."
+          }
+        }
+      ],
+      "result": {
+        "name": "label",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "name": "cardCodes",
+      "description": "The exported constant `cardCodes` (read, not called): the card-code surface poker-hand-ranking takes.",
+      "paramStructure": "by-position",
+      "params": [],
+      "result": {
+        "name": "codes",
+        "schema": {
+          "$ref": "#/components/schemas/CardCodes"
+        }
+      },
+      "x-ourapps-constant": true
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Card": {
+        "type": "string",
+        "pattern": "^([2-9TJQKA][cdhs]|\\*[rb])$",
+        "description": "Two characters: rank 2-9, T, J, Q, K, A then suit c, d, h, s; jokers are *r (red) and *b (black)."
+      },
+      "DeckSettings": {
+        "type": "object",
+        "properties": {
+          "decks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8,
+            "description": "How many 52-card packs."
+          },
+          "jokers": {
+            "type": "boolean",
+            "description": "Two jokers per pack when true."
+          }
+        },
+        "required": [
+          "decks",
+          "jokers"
+        ],
+        "additionalProperties": false
+      },
+      "Deck": {
+        "type": "object",
+        "properties": {
+          "draw": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            },
+            "description": "Cards still to deal; the next card is the last element."
+          },
+          "burned": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            },
+            "description": "Cards burned face down."
+          }
+        },
+        "required": [
+          "draw",
+          "burned"
+        ],
+        "additionalProperties": false
+      },
+      "ParsedCard": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 12
+          },
+          "suit": {
+            "type": "integer",
+            "minimum": -1,
+            "maximum": 3
+          },
+          "joker": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rank",
+          "suit",
+          "joker"
+        ],
+        "additionalProperties": false,
+        "description": "A joker has rank and suit -1."
+      },
+      "CardFacts": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/Card"
+          },
+          "rank": {
+            "type": "string",
+            "enum": [
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "T",
+              "J",
+              "Q",
+              "K",
+              "A",
+              "*"
+            ]
+          },
+          "suit": {
+            "type": "string",
+            "enum": [
+              "c",
+              "d",
+              "h",
+              "s",
+              "r",
+              "b"
+            ]
+          },
+          "red": {
+            "type": "boolean"
+          },
+          "glyph": {
+            "type": "string",
+            "enum": [
+              "♣",
+              "♦",
+              "♥",
+              "♠",
+              "★"
+            ],
+            "description": "Suit glyph; a star for a joker."
+          },
+          "court": {
+            "enum": [
+              "jack",
+              "queen",
+              "king",
+              null
+            ]
+          },
+          "joker": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "rank",
+          "suit",
+          "red",
+          "glyph",
+          "court",
+          "joker"
+        ],
+        "additionalProperties": false
+      },
+      "Shuffler": {
+        "type": "object",
+        "description": "The part of a random-source card-deck calls: a created fair-shuffle source (createSource, seededSource, secureSource or sourceFrom) or any object with this method.",
+        "properties": {
+          "shuffle": {
+            "description": "A function shuffle<T>(items: readonly T[]): T[], a shuffled copy."
+          }
+        },
+        "required": [
+          "shuffle"
+        ],
+        "x-ourapps-interface": "ae/random-source"
+      },
+      "CardCodes": {
+        "type": "object",
+        "description": "Card-code tables and lookups.",
+        "properties": {
+          "ranks": {
+            "type": "string",
+            "const": "23456789TJQKA"
+          },
+          "suits": {
+            "type": "string",
+            "const": "cdhs"
+          },
+          "rankNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 13,
+            "maxItems": 13,
+            "description": "two ... ace"
+          },
+          "rankPlurals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 13,
+            "maxItems": 13,
+            "description": "twos ... aces"
+          },
+          "rankOf": {
+            "description": "A function rankOf(card: Card): number. As the rankOf method."
+          },
+          "suitOf": {
+            "description": "A function suitOf(card: Card): number. As the suitOf method."
+          },
+          "fullDeck": {
+            "description": "A function fullDeck(): Card[]. As the fullPack method."
+          }
+        },
+        "required": [
+          "ranks",
+          "suits",
+          "rankNames",
+          "rankPlurals",
+          "rankOf",
+          "suitOf",
+          "fullDeck"
+        ]
+      }
+    },
+    "errors": {
+      "BadDecks": {
+        "code": 1001,
+        "message": "decks must be a whole number from 1 to 8",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "BadJokers": {
+        "code": 1002,
+        "message": "jokers must be true or false",
+        "data": {
+          "thrown": "TypeError"
+        }
+      },
+      "BadCount": {
+        "code": 1003,
+        "message": "count must be a whole number of at least 0",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "ShortPile": {
+        "code": 1004,
+        "message": "cannot deal <count> from <remaining> cards",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "BadRankSuit": {
+        "code": 1005,
+        "message": "rank is 0 to 12 and suit 0 to 3",
+        "data": {
+          "thrown": "RangeError"
+        }
+      },
+      "NotACard": {
+        "code": 1006,
+        "message": "not a card: <code>",
+        "data": {
+          "thrown": "RangeError"
+        }
+      }
+    }
+  }
+}
