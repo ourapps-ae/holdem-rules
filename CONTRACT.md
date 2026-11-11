@@ -25,7 +25,7 @@ The installer collects three optional settings (the recipe maps its rules file t
 - `implementation/web/betting.ts` -> `components/holdem-rules/web/betting.ts`
 
 Dependencies: none.
-`tools.lock.json` pins verification tools: node 26.5.0, python3 3.12.8, swiftc 6.4.2, kotlinc 2.2.0, java 26.0.1. Licence: `Apache-2.0` (`LICENCE`, `NOTICE`).
+`tools.lock.json` pins verification tools: node 26.5, python3 3.12, swiftc 6.4, kotlinc 2.2, java 26.0. Licence: `Apache-2.0` (`LICENCE`, `NOTICE`).
 
 ## Provided interfaces
 - `interfaces/game-rules.json` defines `game-rules` (ae/game-rules) version 1.0.0: an OpenRPC 1.3.2 document, one method per function (a member of a created object is `<Type>.<member>`), with parameter, result and data types as JSON Schema 2020-12 (`components.schemas`) and thrown errors under `errors`.
@@ -51,9 +51,9 @@ No deployed service, account or key. Pure functions; no clocks and no storage. A
 ## Verification
 `node --test tests/server.test.ts tests/rules.test.ts tests/web.test.ts` plays scripted hands (heads-up to showdown, three-handed fold-out, dead button and heads-up positions, minimum raise sizes and refused amounts, short all-in that does not reopen betting, short raises that add up to a full raise, side pots won by different players, uncalled chips returned, split pots with the odd chip clockwise from the button, folded chips above the last live layer, runout, voluntary show, view masking, void) and 60 random games of 2 to 9 players on the lower layer; `tests/rules.test.ts` plays eight scripted rounds through the interface only (with a fake deck, a fake schedule, and both the real chip ledger and an independent fake ledger) and asserts the same public facts after every step, the same result and positions as the lower layer, the hold time and the history entry; covers each of the 14 operations (pacing, codes, observation shape, records, prompt, paused legal, void, settings from the rules file, ledger mismatch, minimum unit, `sidePots` off and `first-listed` odd chip through the ledger, ledger call order) and 40 random games through the interface with the ledger balanced after every step. Chip-ledger, card-deck and poker-hand-ranking are copies of the current provider files under `tests/support/`. `python3 tests/native.py apple` compiles and runs the Swift amount model against the same fixture the web tests read. `python3 tests/native.py android` does the same with kotlinc and java (written, not run: kotlinc is not installed on the build machine). `authoring/differential-vs-recipe.ts` (not packaged) drove the recipe's engine.ts and the lower layer (with the real chip ledger) with the same decks and the same random legal actions over 540 hands and 4409 actions (112 refused identically) and compared stacks, bets, street, actor, bet to match, pots, winners, shown cards and positions after every action: no difference except the one hand where the recipe loses chips (see SOURCE.md).
 
-- `node --test tests/server.test.ts tests/rules.test.ts tests/web.test.ts` (web, required-local; tools: node 26.5.0)
-- `python3 tests/native.py apple` (apple, platform; tools: python3 3.12.8, swiftc 6.4.2)
-- `python3 tests/native.py android` (android, platform; tools: python3 3.12.8, kotlinc 2.2.0, java 26.0.1)
+- `node --test tests/server.test.ts tests/rules.test.ts tests/web.test.ts` (web, required-local; tools: node 26.5)
+- `python3 tests/native.py apple` (apple, platform; tools: python3 3.12, swiftc 6.4)
+- `python3 tests/native.py android` (android, platform; tools: python3 3.12, kotlinc 2.2, java 26.0)
 
 ## Scenarios and presentation
 A nine-person tournament table; a heads-up final; a short stack all-in against two deeper stacks with a side pot; a split pot on a board play; a hand voided when the tournament is cancelled; a coach who stops at the runout to explain the pots.
