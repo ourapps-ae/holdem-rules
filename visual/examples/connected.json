@@ -12,7 +12,7 @@
       "kind": "component",
       "status": "example",
       "package": "ourapps-ae/holdem-rules",
-      "version": "0.3.0",
+      "version": "0.4.1",
       "ports": [
         {
           "id": "card-deck",

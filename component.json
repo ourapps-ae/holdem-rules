@@ -280,7 +280,7 @@
     "name": "ourapps-ae/holdem-rules",
     "sourceRevision": "19905b75dbea89fbfd424d67fe26c81aaed0e018",
     "sourceTreeDigest": "0000000000000000000000000000000000000000000000000000000000000000",
-    "version": "0.4.0"
+    "version": "0.4.1"
   },
   "infrastructure": {
     "accounts": [],
@@ -357,7 +357,7 @@
       "scope": "required-local",
       "timeoutSeconds": 120,
       "tools": {
-        "node": "26.5.0"
+        "node": "26.5"
       }
     },
     {
@@ -383,8 +383,8 @@
       "scope": "platform",
       "timeoutSeconds": 120,
       "tools": {
-        "python3": "3.12.8",
-        "swiftc": "6.4.2"
+        "python3": "3.12",
+        "swiftc": "6.4"
       }
     },
     {
@@ -410,9 +410,9 @@
       "scope": "platform",
       "timeoutSeconds": 120,
       "tools": {
-        "java": "26.0.1",
-        "kotlinc": "2.2.0",
-        "python3": "3.12.8"
+        "java": "26.0",
+        "kotlinc": "2.2",
+        "python3": "3.12"
       }
     }
   ],
