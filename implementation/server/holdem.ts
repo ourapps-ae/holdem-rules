@@ -418,3 +418,6 @@ export function createHoldem(deps: { ranking: HandRankingLike; ledger: LedgerOpe
   };
 }
 
+
+// The rules createHoldem returns.
+export type Holdem = ReturnType<typeof createHoldem>;

@@ -47,6 +47,12 @@
       "executable": false,
       "source": "implementation/web/betting.ts",
       "template": false
+    },
+    {
+      "destination": "components/holdem-rules/web/index.ts",
+      "executable": false,
+      "source": "implementation/web/index.ts",
+      "template": false
     }
   ],
   "capabilities": {
@@ -60,7 +66,8 @@
       "components/holdem-rules/server/pots.ts",
       "components/holdem-rules/server/rules.ts",
       "components/holdem-rules/server/types.ts",
-      "components/holdem-rules/web/betting.ts"
+      "components/holdem-rules/web/betting.ts",
+      "components/holdem-rules/web/index.ts"
     ]
   },
   "collect": [
@@ -168,6 +175,10 @@
     {
       "executable": false,
       "path": "implementation/web/betting.ts"
+    },
+    {
+      "executable": false,
+      "path": "implementation/web/index.ts"
     },
     {
       "executable": false,

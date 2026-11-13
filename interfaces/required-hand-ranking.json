@@ -25,7 +25,12 @@
         "schema": {
           "$ref": "#/components/schemas/HandRanking"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "handRanking",
@@ -38,7 +43,12 @@
           "$ref": "#/components/schemas/HandRanking"
         }
       },
-      "x-ourapps-property": true
+      "x-ourapps-property": true,
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "standardCodes",
@@ -51,7 +61,12 @@
           "$ref": "#/components/schemas/CardCodes"
         }
       },
-      "x-ourapps-property": true
+      "x-ourapps-property": true,
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "CATEGORY",
@@ -69,7 +84,12 @@
           "maxItems": 9
         }
       },
-      "x-ourapps-property": true
+      "x-ourapps-property": true,
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.codes",
@@ -82,7 +102,12 @@
           "$ref": "#/components/schemas/CardCodes"
         }
       },
-      "x-ourapps-property": true
+      "x-ourapps-property": true,
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.evaluate",
@@ -113,6 +138,11 @@
         },
         {
           "$ref": "#/components/errors/NotACard"
+        }
+      ],
+      "tags": [
+        {
+          "name": "typescript"
         }
       ]
     },
@@ -155,6 +185,11 @@
         {
           "$ref": "#/components/errors/NotACard"
         }
+      ],
+      "tags": [
+        {
+          "name": "typescript"
+        }
       ]
     },
     {
@@ -182,7 +217,12 @@
         "schema": {
           "$ref": "#/components/schemas/Comparison"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.winners",
@@ -259,6 +299,11 @@
         {
           "$ref": "#/components/errors/NotACard"
         }
+      ],
+      "tags": [
+        {
+          "name": "typescript"
+        }
       ]
     },
     {
@@ -281,7 +326,12 @@
           "minimum": 1,
           "maximum": 5
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.kickers",
@@ -306,7 +356,12 @@
             "maximum": 12
           }
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.bestFive",
@@ -341,7 +396,12 @@
           },
           "maxItems": 5
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.patternCards",
@@ -374,7 +434,12 @@
             "$ref": "#/components/schemas/Card"
           }
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     },
     {
       "name": "HandRanking.describe",
@@ -415,7 +480,12 @@
         "schema": {
           "type": "string"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "typescript"
+        }
+      ]
     }
   ],
   "components": {
@@ -570,5 +640,8 @@
         }
       }
     }
+  },
+  "x-ourapps-modules": {
+    "server": "server/index.ts"
   }
 }

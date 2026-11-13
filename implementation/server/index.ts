@@ -1,4 +1,4 @@
-export { createHoldem } from "./holdem.ts";
+export { createHoldem, type Holdem } from "./holdem.ts";
 export { createGameRules, DEFAULT_PACING } from "./rules.ts";
 export { awardPot, showdownOf } from "./pots.ts";
 export { ACTION_TYPES, DEFAULT_SETTINGS } from "./types.ts";

@@ -33,6 +33,11 @@
         {
           "$ref": "#/components/errors/BadJokers"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -68,6 +73,11 @@
         {
           "$ref": "#/components/errors/BadJokers"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -95,7 +105,12 @@
         "schema": {
           "$ref": "#/components/schemas/Deck"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "deal",
@@ -149,6 +164,11 @@
         {
           "$ref": "#/components/errors/ShortPile"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -187,6 +207,11 @@
         {
           "$ref": "#/components/errors/ShortPile"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -208,7 +233,12 @@
           "type": "integer",
           "minimum": 0
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "validateSettings",
@@ -236,6 +266,11 @@
         {
           "$ref": "#/components/errors/BadJokers"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -253,7 +288,12 @@
           "minItems": 52,
           "maxItems": 52
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "parseCard",
@@ -278,7 +318,12 @@
             }
           ]
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "isCard",
@@ -296,7 +341,12 @@
         "schema": {
           "type": "boolean"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "isJoker",
@@ -314,7 +364,12 @@
         "schema": {
           "type": "boolean"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "makeCard",
@@ -350,6 +405,11 @@
         {
           "$ref": "#/components/errors/BadRankSuit"
         }
+      ],
+      "tags": [
+        {
+          "name": "server"
+        }
       ]
     },
     {
@@ -372,7 +432,12 @@
           "minimum": -1,
           "maximum": 12
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "suitOf",
@@ -394,7 +459,12 @@
           "minimum": -1,
           "maximum": 3
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "isRed",
@@ -414,7 +484,12 @@
         "schema": {
           "type": "boolean"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     },
     {
       "name": "cardName",
@@ -438,6 +513,11 @@
       "errors": [
         {
           "$ref": "#/components/errors/NotACard"
+        }
+      ],
+      "tags": [
+        {
+          "name": "server"
         }
       ]
     },
@@ -464,7 +544,12 @@
             }
           ]
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "web"
+        }
+      ]
     },
     {
       "name": "rankLabel",
@@ -497,7 +582,12 @@
         "schema": {
           "type": "string"
         }
-      }
+      },
+      "tags": [
+        {
+          "name": "web"
+        }
+      ]
     },
     {
       "name": "cardCodes",
@@ -510,7 +600,12 @@
           "$ref": "#/components/schemas/CardCodes"
         }
       },
-      "x-ourapps-constant": true
+      "x-ourapps-constant": true,
+      "tags": [
+        {
+          "name": "server"
+        }
+      ]
     }
   ],
   "components": {
@@ -770,5 +865,11 @@
         }
       }
     }
+  },
+  "x-ourapps-modules": {
+    "web": "web/index.ts",
+    "server": "server/index.ts",
+    "android": "android/src/main/java",
+    "apple": "apple/Sources"
   }
 }
