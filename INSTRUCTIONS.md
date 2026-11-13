@@ -3,7 +3,7 @@
 ## For the agent
 Select this component for any Texas hold'em recipe. Connect hand-ranking to poker-hand-ranking, card-deck to card-deck, chip-ledger to chip-ledger, level-schedule to level-schedule (levels with values {sb, bb}) and rules-settings to rules-settings; connect the provided game-rules interface to turn-engine's game-rules input. Map the recipe's answers to `seats`, `minimumOpeningBetBigBlinds` and `revealAtRunout`; the chip ledger's `sidePots`, `oddChipRule` and `minimumUnit` settings are set on chip-ledger and decide the pots. Include the web, Apple and Android amount model files in the clients that show a bet slider.
 
-- Select package `ourapps-ae/holdem-rules` version `0.4.1`.
+- Select package `ourapps-ae/holdem-rules` version `0.5.0`.
 - Settings to configure:
   - `seats` (integer; optional; default `9`)
   - `minimumOpeningBetBigBlinds` (integer; optional; default `1`)

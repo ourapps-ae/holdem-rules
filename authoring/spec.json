@@ -1,6 +1,6 @@
 {
   "name": "holdem-rules",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "title": "Hold'em rules",
   "description": "Texas hold'em for a table engine: the game-rules interface turn-engine drives (round, phase, act, step, outcome, observation, records, views, prompt) as an adapter over a hand state machine that moves every chip through the chip ledger; plus the betting controls' amount model.",
   "facilities": [
